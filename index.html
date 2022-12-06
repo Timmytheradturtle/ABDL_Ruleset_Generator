@@ -20,82 +20,6 @@
 
 <script>
 
-  /* ~~~~ Timer logic that I never quite got working the way I wanted... ~~~~ ***
-  // paciInterval should be in milliseconds
-  const setPaciTimer = function(paciInterval) {
-    console.log("Starting Paci Timer");
-    clearInterval(x);
-    var countdownDate = new Date().getTime() + paciInterval;
-    var x = setInterval(function() {
-      console.log("paci heartbeat");
-      var now = new Date().getTime();
-      var distance = countdownDate - now;
-      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-      document.getElementById("paciTimerDisplay").innerHTML = minutes + ":" + seconds;
-
-      if (distance < 0) {
-        clearInterval(x);
-        document.getElementById("paciTimerDisplay").innerHTML = "TIME'S UP!";
-      }
-    }, 1000);
-  };
-  */
-
-  /* ~~~~ Function for binding event handlers to buttons that was a bit funky ~~~~ ***
-  const bindHandlers = function() {
-    let paciTimerResetButton = document.getElementById('paciTimerResetButton');
-    paciTimerResetButton.addEventListener("click", setPaciTimer(1200000));
-    
-    document.getElementById('paciTimerResetButton2').addEventListener("click", console.log("Hello World"));
-  };
-  */
-
-
-  // Some test JSON just to get me started
-  let tablesJsonTest = {
-    "rules": [
-    {
-      "rule_id": "A0",
-      "likelihood": 15,
-      "max_stacks": 30,
-      "description": "Add 15 minutes to your required diaper time.",
-      "category": "miscellaneous"
-    },
-    {
-      "rule_id": "A1",
-      "likelihood": 2,
-      "max_stacks": 4,
-      "description": "Whenever you start sucking on something, you are not allowed to stop sucking for an additional 3 minutes after you'd normally be allowed to stop. (+2 per stack up to 9 minutes)",
-      "category": "miscellaneous"
-    },
-    {
-      "rule_id": "A2",
-      "likelihood": 8,
-      "max_stacks": 1,
-      "description": "Whenever you are both sucking on something and laying down, you are not allowed to hold your bladder. (Cannot stack)",
-      "category": "miscellaneous"
-    }]
-  };
-
-
-  // Recycled function pulled from main.js
-  const drawDiv = function(id, className, content) {
-    let wrapper = document.createElement('div');
-    if (id != null && id != '') {
-      wrapper.id = id;
-    }
-    if (className != null && className != '') {
-      wrapper.className = className;
-    }
-    if (content != null && content != '') {
-      wrapper.innerHTML = content;
-    }
-    return wrapper;
-  };
-
-
   // Automatically populate rules table with info from JSON
   const populateRulesTable = function() {
     console.log("Populating rules table...");
@@ -161,14 +85,9 @@
     }
     
     let i = 0;
-    console.log("*** Entering the loop...");
     while (i < numRules) {
       const roll = Math.floor(Math.random() * likelihoodArray.length);
-      console.log("roll = " + roll);
       const rolledRuleId = likelihoodArray[roll];
-      console.log("rolled rule ID = " + rolledRuleId);
-      console.log("current stacks = " + activeRules[rolledRuleId].stacks);
-      console.log("max stacks = " + activeRules[rolledRuleId].max_stacks);
       if (activeRules[rolledRuleId].stacks <= activeRules[rolledRuleId].max_stacks - 1) {
         activeRules[rolledRuleId].stacks = activeRules[rolledRuleId].stacks + 1;
         i++;
@@ -236,7 +155,6 @@
     console.log("REROLLING!");
     const numRulesInput = document.getElementById("numRulesInput");
     const numRules = numRulesInput.value;
-    console.log("numRules = " + numRules);
     clearActiveRulesTable();
     const activeRuleset = generateActiveRuleset(numRules);
     populateActiveRulesTable(activeRuleset);
