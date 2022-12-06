@@ -161,10 +161,27 @@
   };
 
 
+  const setupCollapsibles = function() {
+    const coll = document.getElementsByClassName("collapsible");
+    for (let i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        let content = this.nextElementSibling;
+        if (content.style.display === "block") {
+          content.style.display = "none";
+        } else {
+          content.style.display = "block";
+        }
+      });
+    }
+  };
+
+
   const main = function() {
     populateRulesTable();
     const activeRuleset = generateActiveRuleset(20);
     populateActiveRulesTable(activeRuleset);
+    setupCollapsibles();
   };
 
 </script>
@@ -187,8 +204,8 @@
   </div>
   
   <div class="tableWrapper">
-    <h5>Rules Table</h5>
-    <table id="rulesTable">
+    <h5 class="collapsible">Rules Table</h5>
+    <table id="rulesTable" class="content">
       <tr>
         <th>Rule ID</th>
         <th>Likelihood</th>
