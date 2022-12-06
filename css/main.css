@@ -3,9 +3,9 @@ body {
   color: white;
 }
 
-h5 {
-  margin: auto;
+h2 {
   text-align: center;
+  margin: auto;
 }
 
 table {
@@ -71,6 +71,13 @@ table .other {
   float: left;
   margin: 12px 24px;
 }
+
+.tableWrapper h4 {
+  margin: auto;
+  text-align: center;
+  border-radius: 24px;
+}
+
 
 .tableWrapper {
   margin: 50px;
