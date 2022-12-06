@@ -1,0 +1,275 @@
+rulesData = [
+  {
+    "rule_id": "M0",
+    "likelihood": 15,
+    "max_stacks": 12,
+    "description": "Add 30 minutes to your required diaper time.",
+    "category": "miscellaneous"
+  },
+  {
+    "rule_id": "M1",
+    "likelihood": 8,
+    "max_stacks": 1,
+    "description": "Whenever you are both sucking on something and laying down, you must try to wet yourself. (Cannot stack)",
+    "category": "miscellaneous"
+  },
+  {
+    "rule_id": "C0",
+    "likelihood": 5,
+    "max_stacks": 12,
+    "description": "Add 1 minute to your required corner time.",
+    "category": "cornertime"
+  },
+  {
+    "rule_id": "C1",
+    "likelihood": 2,
+    "max_stacks": 1,
+    "description": "Whenever you are in corner time, each time you drop the coin, you must add half of your required corner time to your remaining corner time. (Cannot stack)",
+    "category": "cornertime"
+  },
+  {
+    "rule_id": "C2",
+    "likelihood": 2,
+    "max_stacks": 1,
+    "description": "Whenever you are in corner time, each time you drop the coin, it will result in a spanking when you finish your corner time. (Cannot stack)",
+    "category": "cornertime"
+  },
+  {
+    "rule_id": "C3",
+    "likelihood": 2,
+    "max_stacks": 3,
+    "description": "Whenever you are in corner time, each time you drop the coin, add 20 minutes to your required diaper time. (+10 per stack - max 3 stacks)",
+    "category": "cornertime"
+  },
+  {
+    "rule_id": "C4",
+    "likelihood": 4,
+    "max_stacks": 4,
+    "description": "Before beginning your corner time, you must set a random timer with a min of 0 seconds and a max of 3 minutes longer than your total corner time. If the timer goes off while you are still in corner time, then you must immediately try to wet yourself. If you can\'t, add 15 minutes to your required diaper time. (-30 seconds timer max per stack - max 4 stacks)",
+    "category": "cornertime"
+  },
+  {
+    "rule_id": "C5",
+    "likelihood": 3,
+    "max_stacks": 1,
+    "description": "Whenever you are in corner time, you must be sucking on your paci. (Cannot stack)",
+    "category": "cornertime"
+  },
+  {
+    "rule_id": "C6",
+    "likelihood": 3,
+    "max_stacks": 3,
+    "description": "Whenever you are put in corner time immediately after being spanked, increase the length of that corner time by 50%. (+25% per stack - max 3 stacks)",
+    "category": "cornertime"
+  },
+  {
+    "rule_id": "D0",
+    "likelihood": 4,
+    "max_stacks": 4,
+    "description": "Add 200 mL to your required hourly drinking amount. (Max 4 stacks)",
+    "category": "drinking"
+  },
+  {
+    "rule_id": "D1",
+    "likelihood": 5,
+    "max_stacks": 1,
+    "description": "Whenever you drink, it must be from a baby bottle or sippy cup. (Cannot stack)",
+    "category": "drinking"
+  },
+  {
+    "rule_id": "D2",
+    "likelihood": 5,
+    "max_stacks": 1,
+    "description": "Whenever you drink, you must always be laying down (bottle or sippy cup strongly recommended for this). (Cannot stack)",
+    "category": "drinking"
+  },
+  {
+    "rule_id": "D3",
+    "likelihood": 2,
+    "max_stacks": 1,
+    "description": "Whenever you suck on something in order to drink, you may not remove your lips from it until your drink is finished. (Cannot stack)",
+    "category": "drinking"
+  },
+  {
+    "rule_id": "D4",
+    "likelihood": 3,
+    "max_stacks": 1,
+    "description": "Whenever you must interrupt your pacifier time in order to drink, you must try to wet yourself before putting the pacifier back in to complete your pacifier time. (Cannot stack)",
+    "category": "drinking"
+  },
+  {
+    "rule_id": "D5",
+    "likelihood": 3,
+    "max_stacks": 1,
+    "description": "Whenever you are drinking and are in a wet diaper, you must try to wet yourself. (Cannot stack)",
+    "category": "drinking"
+  },
+  {
+    "rule_id": "D6",
+    "likelihood": 3,
+    "max_stacks": 1,
+    "description": "Whenever you drink, you must always be holding your drink with both hands. (Cannot stack)",
+    "category": "drinking"
+  },
+  {
+    "rule_id": "P0",
+    "likelihood": 5,
+    "max_stacks": 6,
+    "description": "Add 5 swats to your required swats per spanking. (Max 6 stacks)",
+    "category": "spanking"
+  },
+  {
+    "rule_id": "P1",
+    "likelihood": 3,
+    "max_stacks": 1,
+    "description": "Whenever you are about to be spanked, flip a coin. If it\'s heads, then the spanking must be administered using a spanking implement (not bare-handed). (Cannot stack)",
+    "category": "spanking"
+  },
+  {
+    "rule_id": "P2",
+    "likelihood": 2,
+    "max_stacks": 1,
+    "description": "Each time you receive a swat during a spanking, you must say, \"Thank you Mommy/Daddy.\" (Cannot stack)",
+    "category": "spanking"
+  },
+  {
+    "rule_id": "P3",
+    "likelihood": 5,
+    "max_stacks": 1,
+    "description": "You must be sucking on a pacifier for the duration of any spanking you receive. (Cannot stack)",
+    "category": "spanking"
+  },
+  {
+    "rule_id": "P4",
+    "likelihood": 3,
+    "max_stacks": 4,
+    "description": "For every 5 spanks you receive, add 1 minute to your required diaper time. (+1 minute per stack - max 4 stacks - You cannot gain more than 15 additional minutes per spanking)",
+    "category": "spanking"
+  },
+  {
+    "rule_id": "P5",
+    "likelihood": 4,
+    "max_stacks": 1,
+    "description": "Whenever you are spanked while in a wet diaper, you must perform your corner time immediately afterwards. (Cannot stack)",
+    "category": "spanking"
+  },
+  {
+    "rule_id": "E0",
+    "likelihood": 2,
+    "max_stacks": 4,
+    "description": "You must be sucking on a pacifier for at least 15 continuous minutes before you are allowed to change. (+10 per stack - max 4 stacks)",
+    "category": "changing"
+  },
+  {
+    "rule_id": "E1",
+    "likelihood": 2,
+    "max_stacks": 3,
+    "description": "The first time you meet all necessary conditions to have your diaper changed after changing into a fresh diaper, roll a d6. If you roll lower than a 4, then instead of changing, you must instead layer another diaper overtop your current one, cutting slits in the diaper underneath. You must then meet all changing requirements again before you may finally change into a fresh diaper. (+1 per stack - max 3 stacks)",
+    "category": "changing"
+  },
+  {
+    "rule_id": "E2",
+    "likelihood": 2,
+    "max_stacks": 1,
+    "description": "For every diaper change, you must receive a spanking either before or after. You choose which. (Cannot stack)",
+    "category": "changing"
+  },
+  {
+    "rule_id": "E3",
+    "likelihood": 4,
+    "max_stacks": 3,
+    "description": "You must perform 50% of your corner time before you are allowed to change. (+50% per stack - max 3 stacks)",
+    "category": "changing"
+  },
+  {
+    "rule_id": "E4",
+    "likelihood": 2,
+    "max_stacks": 3,
+    "description": "Whenever you meet all other requirements for changing, you must roll 1d6 and then wait that many minutes before you are allowed to change. (+1d6 per stack - max 3 stacks)",
+    "category": "changing"
+  },
+  {
+    "rule_id": "E5",
+    "likelihood": 4,
+    "max_stacks": 3,
+    "description": "Your diaper must be 10% more saturated in order to change. (+10% per stack - max 3 stacks)",
+    "category": "changing"
+  },
+  {
+    "rule_id": "A0",
+    "likelihood": 7,
+    "max_stacks": 12,
+    "description": "Add 1 article of babyish/sissy clothing to your outfit if possible. If not, add 30 minutes to your required Diaper Time.",
+    "category": "clothing"
+  },
+  {
+    "rule_id": "A1",
+    "likelihood": 4,
+    "max_stacks": 3,
+    "description": "You may only wear a maximum of 2 adult clothing items. (-1 per stack - max 3 stacks)",
+    "category": "clothing"
+  },
+  {
+    "rule_id": "A2",
+    "likelihood": 6,
+    "max_stacks": 1,
+    "description": "You must clip your pacifier to your clothing. If you cannot do this, then add 30 minutes to your diaper time instead. (Cannot stack)",
+    "category": "clothing"
+  },
+  {
+    "rule_id": "A3",
+    "likelihood": 6,
+    "max_stacks": 1,
+    "description": "Whenever you are in a wet diaper, you may not cover it up with any clothing except explicitly babyish clothing such as a onesie or plastic panties. (Cannot stack)",
+    "category": "clothing"
+  },
+  {
+    "rule_id": "B0",
+    "likelihood": 5,
+    "max_stacks": 4,
+    "description": "Increase your pacifier time by 5 minutes. (Max 4 stacks)",
+    "category": "pacifier"
+  },
+  {
+    "rule_id": "B1",
+    "likelihood": 4,
+    "max_stacks": 1,
+    "description": "Whenever you have a pacifier in your mouth, you are not allowed to stand up. (Cannot stack)",
+    "category": "pacifier"
+  },
+  {
+    "rule_id": "B2",
+    "likelihood": 4,
+    "max_stacks": 1,
+    "description": "Whenever you’re normally allowed to remove your pacifier, you must roll a d6. If you roll lower than a 4, then you are not allowed to remove your paci until you wet your diaper or until 5 * [your roll] minutes pass. (Cannot stack)",
+    "category": "pacifier"
+  },
+  {
+    "rule_id": "B3",
+    "likelihood": 5,
+    "max_stacks": 1,
+    "description": "Whenever you put a pacifier in your mouth, roll a d6. If your roll is lower than the number of baby/sissy clothing items you have on (including your diaper), then you must actively try to wet yourself for one whole minute. If you fail to wet, then you must flip a coin where heads is a spanking and tails is corner time. (Cannot stack)",
+    "category": "pacifier"
+  },
+  {
+    "rule_id": "X0",
+    "likelihood": 4,
+    "max_stacks": 2,
+    "description": "If you ever meet all of the following criteria at once...\n- in a wet diaper\n- sucking on a pacifier\n- not allowed to stand freely\n- being punished (spanked or in corner time)\n...then roll a d6. If you roll a 1, increase your diaper time by 30 minutes. (+30 per stack - max 2 stacks)",
+    "category": "other"
+  },
+  {
+    "rule_id": "X1",
+    "likelihood": 4,
+    "max_stacks": 3,
+    "description": "You are not allowed to end this dare until you\'ve changed your diaper at least once and kept the new diaper on for 30 minutes. (+30 minutes per stack - max 3 stacks)",
+    "category": "other"
+  },
+  {
+    "rule_id": "X2",
+    "likelihood": 4,
+    "max_stacks": 2,
+    "description": "You must accept an additional 5 rules. (+5 per stack - max 2 stacks)",
+    "category": "other"
+  }
+];

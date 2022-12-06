@@ -1,0 +1,75 @@
+body {
+  background-color: pink;
+  color: white;
+}
+
+h5 {
+  margin: auto;
+  text-align: center;
+}
+
+table {
+  color: white;
+}
+
+table .miscellaneous {
+  background-color: rgb(255, 153, 163);
+}
+
+table .cornertime {
+  background-color: rgb(255, 153, 207);
+}
+
+table .drinking {
+  background-color: rgb(255, 153, 247);
+}
+
+table .spanking {
+  background-color: rgb(211, 173, 255);
+}
+
+table .changing {
+  background-color: rgb(170, 175, 253);
+}
+
+table .clothing {
+  background-color: rgb(128, 210, 255);
+}
+
+table .pacifier {
+  background-color: rgb(102, 220, 225);
+}
+
+table .other {
+  background-color: rgb(114, 223, 196);
+}
+
+#rerollButton {
+  float: right;
+  margin-top: 6px;
+  margin-right: 6px;
+}
+
+#numRulesInput {
+  width: 48px;
+  text-align: center;
+  color: white;
+}
+
+#activeRulesTableControls {
+  width: 300px;
+/*  margin: 12px auto;*/
+  padding: 2px 6px 0px 12px;
+  border-radius: 12px;
+  background-color: rgb(255, 209, 209);
+  position: absolute;
+  top: 64px;
+}
+
+.tableWrapper {
+  margin: 50px;
+  padding: 12px;
+  border: 3px solid white;
+  border-radius: 24px;
+  background-color: lightpink;
+}

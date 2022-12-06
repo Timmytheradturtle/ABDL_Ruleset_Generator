@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="description" content="ABDL Ruleset Generator (BETA)">
+  <meta name="author" content="Timmy Wormwood">
+  <meta charset="UTF-8">
+  <title>ABDL Ruleset Generator (BETA)</title>
+  <link rel="stylesheet" href="css/main.css">
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="json/tableData.json"></script>
+  
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!--Import materialize.css-->
+  <link type="text/css" rel="stylesheet" href="css/materialize.css"  media="screen,projection"/>
+
+  <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+
+<script>
+
+  /* ~~~~ Timer logic that I never quite got working the way I wanted... ~~~~ ***
+  // paciInterval should be in milliseconds
+  const setPaciTimer = function(paciInterval) {
+    console.log("Starting Paci Timer");
+    clearInterval(x);
+    var countdownDate = new Date().getTime() + paciInterval;
+    var x = setInterval(function() {
+      console.log("paci heartbeat");
+      var now = new Date().getTime();
+      var distance = countdownDate - now;
+      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      document.getElementById("paciTimerDisplay").innerHTML = minutes + ":" + seconds;
+
+      if (distance < 0) {
+        clearInterval(x);
+        document.getElementById("paciTimerDisplay").innerHTML = "TIME'S UP!";
+      }
+    }, 1000);
+  };
+  */
+
+  /* ~~~~ Function for binding event handlers to buttons that was a bit funky ~~~~ ***
+  const bindHandlers = function() {
+    let paciTimerResetButton = document.getElementById('paciTimerResetButton');
+    paciTimerResetButton.addEventListener("click", setPaciTimer(1200000));
+    
+    document.getElementById('paciTimerResetButton2').addEventListener("click", console.log("Hello World"));
+  };
+  */
+
+
+  // Some test JSON just to get me started
+  let tablesJsonTest = {
+    "rules": [
+    {
+      "rule_id": "A0",
+      "likelihood": 15,
+      "max_stacks": 30,
+      "description": "Add 15 minutes to your required diaper time.",
+      "category": "miscellaneous"
+    },
+    {
+      "rule_id": "A1",
+      "likelihood": 2,
+      "max_stacks": 4,
+      "description": "Whenever you start sucking on something, you are not allowed to stop sucking for an additional 3 minutes after you'd normally be allowed to stop. (+2 per stack up to 9 minutes)",
+      "category": "miscellaneous"
+    },
+    {
+      "rule_id": "A2",
+      "likelihood": 8,
+      "max_stacks": 1,
+      "description": "Whenever you are both sucking on something and laying down, you are not allowed to hold your bladder. (Cannot stack)",
+      "category": "miscellaneous"
+    }]
+  };
+
+
+  // Recycled function pulled from main.js
+  const drawDiv = function(id, className, content) {
+    let wrapper = document.createElement('div');
+    if (id != null && id != '') {
+      wrapper.id = id;
+    }
+    if (className != null && className != '') {
+      wrapper.className = className;
+    }
+    if (content != null && content != '') {
+      wrapper.innerHTML = content;
+    }
+    return wrapper;
+  };
+
+
+  // Automatically populate rules table with info from JSON
+  const populateRulesTable = function() {
+    console.log("Populating rules table...");
+    const rulesTable = document.getElementById("rulesTable");
+    
+    rulesData.forEach(rule => {
+      let row = rulesTable.insertRow();
+      $(row).addClass("rulesRow");
+      $(row).addClass(rule.category);
+      
+      let ruleId = row.insertCell(0);
+      let likelihood = row.insertCell(1);
+      let maxStack = row.insertCell(2);
+      let description = row.insertCell(3);
+      
+      ruleId.innerHTML = rule.rule_id;
+      likelihood.innerHTML = rule.likelihood;
+      maxStack.innerHTML = rule.max_stacks;
+      description.innerHTML = rule.description;
+    });
+  };
+  
+
+  // Automatically populate active rules table
+  const populateActiveRulesTable = function(activeRules) {  
+    console.log("Populating active rules table...");
+    let activeRulesTable = document.getElementById("activeRulesTable");
+    
+    Object.entries(activeRules).forEach(rule => {
+      if (rule[1].stacks > 0) {
+        let row = activeRulesTable.insertRow();
+        $(row).addClass("activeRulesRow");
+        $(row).addClass(rule[1].category);
+      
+        let ruleId = row.insertCell(0);
+        let stacks = row.insertCell(1);
+        let description = row.insertCell(2);
+
+        ruleId.innerHTML = rule[0];
+        stacks.innerHTML = rule[1].stacks;
+        description.innerHTML = rule[1].description;
+      }
+    });
+  };
+
+
+  // Generate a object representing a random set of rules.
+  //   The returned object contains an element for every rule in the rulesData.
+  //   Elements follow this format:   "<rule_id>": <num_stacks>
+  const generateActiveRuleset = function(numRules) {
+    console.log("Generating active ruleset...");
+    const activeRules = initializeActiveRuleset(rulesData);
+    const likelihoodArray = createLikelihoodArray(rulesData);
+    const maxRules = calcMaxRules(rulesData);
+    
+    if (numRules > maxRules) {
+      console.log("ERROR: Desired number of rules is impossible. Defaulting to maximum number of rules: " + maxRules); // TODO: Make a notification box when this happens.
+      Object.values(activeRules).forEach(rule => {
+        rule.stacks = rule.max_stacks;
+      });
+      console.log(activeRules);
+      return activeRules;
+    }
+    
+    let i = 0;
+    console.log("*** Entering the loop...");
+    while (i < numRules) {
+      const roll = Math.floor(Math.random() * likelihoodArray.length);
+      console.log("roll = " + roll);
+      const rolledRuleId = likelihoodArray[roll];
+      console.log("rolled rule ID = " + rolledRuleId);
+      console.log("current stacks = " + activeRules[rolledRuleId].stacks);
+      console.log("max stacks = " + activeRules[rolledRuleId].max_stacks);
+      if (activeRules[rolledRuleId].stacks <= activeRules[rolledRuleId].max_stacks - 1) {
+        activeRules[rolledRuleId].stacks = activeRules[rolledRuleId].stacks + 1;
+        i++;
+      }
+    }
+    console.log(activeRules);
+    return activeRules;
+  };
+
+
+  // Helper function for generateActiveRuleset
+  const initializeActiveRuleset = function() {
+    console.log("Initializing activeRules object...");
+    const activeRules = {};
+    rulesData.forEach(rule => {
+      activeRules[rule.rule_id] = {
+        "stacks": 0,
+        "max_stacks": rule.max_stacks,
+        "description": rule.description,
+        "category": rule.category
+      };
+    });
+    console.log(activeRules);
+    return activeRules;
+  };
+
+
+  // Creates an array of Rule IDs where each Rule ID appears in the 
+  //   array a number of times equal to that rule's likelihood.
+  const createLikelihoodArray = function() {
+    console.log("Creating likelihoodArray...");
+    const likelihoodArray = [];
+    rulesData.forEach(rule => {
+      for (let i = 0; i < rule.likelihood; i++) {
+        likelihoodArray.push(rule.rule_id);
+      }
+    });
+    console.log(likelihoodArray);
+    return likelihoodArray;
+  };
+
+
+  // Calculates the maximum possible number of accepted rolls
+  const calcMaxRules = function() {
+    console.log("Calculating max rolls...");
+    let maxRules = 0;
+    rulesData.forEach(rule => {
+      maxRules += rule.max_stacks;
+    });
+    console.log(maxRules);
+    return maxRules;
+  };
+
+
+  const clearActiveRulesTable = function() {
+    console.log("Clearing active rules table...");
+    let rows = document.getElementsByClassName("activeRulesRow");
+    while (rows.length > 0) {
+      rows[0].remove();
+    }
+  };
+
+
+  const rerollActiveRulesTable = function() {
+    console.log("REROLLING!");
+    const numRulesInput = document.getElementById("numRulesInput");
+    const numRules = numRulesInput.value;
+    console.log("numRules = " + numRules);
+    clearActiveRulesTable();
+    const activeRuleset = generateActiveRuleset(numRules);
+    populateActiveRulesTable(activeRuleset);
+  };
+
+
+  const main = function() {
+    populateRulesTable();
+    const activeRuleset = generateActiveRuleset(20);
+    populateActiveRulesTable(activeRuleset);
+  };
+
+</script>
+
+<body onload="main()">
+  <div class="tableWrapper">
+    <h5>Active Rules Table</h5>
+    <table id="activeRulesTable">
+      <tr>
+        <th>Rule ID</th>
+        <th>Stack</th>
+        <th>Description</th>
+      </tr>
+    </table>
+    <div id="activeRulesTableControls">
+      Number of rules:
+      <input id="numRulesInput" type="number" name="numRules" value="20" />
+      <a id="rerollButton" class="vertical-center waves-effect waves-light pink lighten-3 btn" onclick="rerollActiveRulesTable()">Reroll</a>
+    </div>
+  </div>
+  
+  <div class="tableWrapper">
+    <h5>Rules Table</h5>
+    <table id="rulesTable">
+      <tr>
+        <th>Rule ID</th>
+        <th>Likelihood</th>
+        <th>Max Stack</th>
+        <th>Description</th>
+      </tr>
+    </table>
+  </div>
+  
+  <!--JavaScript at end of body for optimized loading-->
+  <script type="text/javascript" src="js/materialize.js"></script>
+</body>
+
+</html>

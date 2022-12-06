@@ -1,0 +1,16 @@
+Roadmap
+
+Wave 1 (MVP)
+1. Get the basic HTML functionality in place
+  1a. Have a table (for the active rules)
+  1b. Have an input for number of rules
+  1c. Have a button for rerolling
+2. Get the basic JS functionality in place
+  2a. Generate random rules array
+  2b. Use array to get list of active rules
+  2c. Use list of active rules to populate rules table
+3. Tie it all together
+  3a. Have button do 2a, 2b, & 2c above.
+
+Wave 2
+1. 
