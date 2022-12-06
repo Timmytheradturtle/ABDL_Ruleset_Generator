@@ -45,9 +45,11 @@ table .other {
 }
 
 #rerollButton {
-  float: right;
-  margin-top: 6px;
   margin-right: 6px;
+}
+
+.activeButton {
+  margin: 0px 6px;
 }
 
 #numRulesInput {
@@ -57,13 +59,17 @@ table .other {
 }
 
 #activeRulesTableControls {
-  width: 300px;
-/*  margin: 12px auto;*/
+  width: 504px;
+  float: right;
   padding: 2px 6px 0px 12px;
   border-radius: 12px;
   background-color: rgb(255, 209, 209);
-  position: absolute;
   top: 64px;
+}
+
+#activeRulesTableHeader h4 {
+  float: left;
+  margin: 12px 24px;
 }
 
 .tableWrapper {
