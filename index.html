@@ -159,21 +159,28 @@
     const activeRuleset = generateActiveRuleset(numRules);
     populateActiveRulesTable(activeRuleset);
   };
+  
+  
+  const setupCollapsible = function(buttonId, contentId) {
+    const button = document.getElementById(buttonId);
+    button.addEventListener("click", function() {
+      this.classList.toggle("active");
+      let content = document.getElementById(contentId);
+      if (content.style.display === "block") {
+        content.style.display = "none";
+      } else {
+        content.style.display = "block";
+      }
+    });
+  };
 
 
   const setupCollapsibles = function() {
-    const coll = document.getElementsByClassName("collapsible");
-    for (let i = 0; i < coll.length; i++) {
-      coll[i].addEventListener("click", function() {
-        this.classList.toggle("active");
-        let content = this.nextElementSibling;
-        if (content.style.display === "block") {
-          content.style.display = "none";
-        } else {
-          content.style.display = "block";
-        }
-      });
-    }
+    // Set up collapsible logic for Active Rules Table
+    setupCollapsible("activeRulesTableTitle", "activeRulesTable");
+    
+    // Set up collapsible logic for Rules Table
+    setupCollapsible("rulesTableTitle", "rulesTable");
   };
 
 
@@ -195,7 +202,7 @@
   <h2>ABDL Ruleset Generator (BETA)</h2>
   <div class="tableWrapper">
     <div id="activeRulesTableHeader">
-      <h4>Active Rules Table</h4>
+      <h4 id="activeRulesTableTitle" class="collapsible">Active Rules Table</h4>
       <div id="activeRulesTableControls">
         Number of rules:
         <input id="numRulesInput" type="number" name="numRules" value="20" />
@@ -204,7 +211,7 @@
         <a id="addButton" class="disabled activeButton vertical-center waves-effect waves-light pink lighten-3 btn" onclick="addRule()">Add one more rule</a>
       </div>
     </div>
-    <table id="activeRulesTable">
+    <table id="activeRulesTable" class="content">
       <tr>
         <th>Rule ID</th>
         <th>Stack</th>
@@ -214,7 +221,7 @@
   </div>
   
   <div class="tableWrapper">
-    <h4 class="collapsible">Rules Table</h4>
+    <h4 id="rulesTableTitle" class="collapsible">Rules Table</h4>
     <table id="rulesTable" class="content">
       <tr>
         <th>Rule ID</th>

@@ -64,20 +64,26 @@ table .other {
   padding: 2px 6px 0px 12px;
   border-radius: 12px;
   background-color: rgb(255, 209, 209);
-  top: 64px;
+  margin: 16px;
 }
 
 #activeRulesTableHeader h4 {
+  margin: 8px 12px;
   float: left;
-  margin: 12px 24px;
+  width: 295px;
+  border-radius: 24px;
 }
 
-.tableWrapper h4 {
+#activeRulesTableHeader {
+  height: 92px;
+  border-radius: 24px;
+}
+
+#rulesTableTitle {
   margin: auto;
   text-align: center;
   border-radius: 24px;
 }
-
 
 .tableWrapper {
   margin: 50px;
