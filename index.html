@@ -97,6 +97,17 @@
     return activeRules;
   };
 
+  /* TODO
+  const addSingleRule = function() {
+    const likelihoodArray = createLikelihoodArray(rulesData);
+    const roll = Math.floor(Math.random() * likelihoodArray.length);
+    const rolledRuleId = likelihoodArray[roll];
+    if (activeRules[rolledRuleId].stacks <= activeRules[rolledRuleId].max_stacks - 1) {
+      activeRules[rolledRuleId].stacks = activeRules[rolledRuleId].stacks + 1;
+      i++;
+    }
+  };
+  */
 
   // Helper function for generateActiveRuleset
   const initializeActiveRuleset = function() {
@@ -159,8 +170,8 @@
     const activeRuleset = generateActiveRuleset(numRules);
     populateActiveRulesTable(activeRuleset);
   };
-  
-  
+
+
   const setupCollapsible = function(buttonId, contentId) {
     const button = document.getElementById(buttonId);
     button.addEventListener("click", function() {
@@ -176,6 +187,9 @@
 
 
   const setupCollapsibles = function() {
+    // Set up collapsible logic for Base Rules
+    setupCollapsible("baseRulesTableTitle", "baseRules");
+    
     // Set up collapsible logic for Active Rules Table
     setupCollapsible("activeRulesTableTitle", "activeRulesTable");
     
@@ -200,7 +214,38 @@
 
 <body onload="main()">
   <h2>ABDL Ruleset Generator (BETA)</h2>
-  <div class="tableWrapper">
+  
+  <div id="baseRulesWrapper" class="tableWrapper">
+    <h4 id="baseRulesTableTitle" class="collapsible">Base Rules</h4>
+    <div id="baseRules" class="content">
+      <div class="baseRuleGroupWrapper">
+        <h5>Random Rolls</h5>
+        <div class="baseRule">Every 30 minutes, you must set a random timer for between 0 & 30 minutes.</div>
+        <div class="baseRule">Whenever your timer goes off, you must roll on the Random Roll Table.</div>
+        <div class="baseRule">If you're wet when the timer goes off, you must also roll on the Soggy Roll Table.</div>
+        <div class="baseRule">If you're sucking on your paci when the timer goes off, you must also roll on the Paci Roll Table.</div>
+      </div>
+      <div class="baseRuleGroupWrapper">
+        <h5>Wetting Rolls</h5>
+        <div class="baseRule">Whenever you wet your diaper, you must roll on the Wetting Roll Table.</div>
+      </div>
+      <div class="baseRuleGroupWrapper">
+        <h5>Change Rolls</h5>
+        <div class="baseRule">Whenever you are about to change your diaper, you must roll on the Change Roll Table.</div>
+      </div>
+      <div class="baseRuleGroupWrapper">
+        <h5>Other Rules</h5>
+        <ul>
+          <li class="baseRule">If your random timer goes off while you are being spanked or in corner time, you must wait to perform your required rolls until after you are finished with all spankings & corner time you have assigned.</li>
+          <li class="baseRule">If your random timer goes off while you are being spanked or in corner time, you must wait to perform your required rolls until after you are finished with all spankings & corner time you have assigned.</li>
+          <li class="baseRule">If your random timer goes off while you are being spanked or in corner time, you must wait to perform your required rolls until after you are finished with all spankings & corner time you have assigned.</li>
+          <li class="baseRule">If your random timer goes off while you are being spanked or in corner time, you must wait to perform your required rolls until after you are finished with all spankings & corner time you have assigned.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <div id="activeRulesTableWrapper" class="tableWrapper">
     <div id="activeRulesTableHeader">
       <h4 id="activeRulesTableTitle" class="collapsible">Active Rules Table</h4>
       <div id="activeRulesTableControls">
@@ -220,7 +265,7 @@
     </table>
   </div>
   
-  <div class="tableWrapper">
+  <div id="rulesTableWrapper" class="tableWrapper">
     <h4 id="rulesTableTitle" class="collapsible">Rules Table</h4>
     <table id="rulesTable" class="content">
       <tr>
