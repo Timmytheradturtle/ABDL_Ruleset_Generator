@@ -170,6 +170,19 @@
     const activeRuleset = generateActiveRuleset(numRules);
     populateActiveRulesTable(activeRuleset);
   };
+  
+  
+  const rollOnRollTable = function(rollTableId) {
+    const rollTable = document.getElementById(rollTableId);
+    const rows = rollTable.firstElementChild.children;
+    // Unselect all rows
+    for (const row of rows) {
+      row.classList.remove("selected");
+    }
+    // Make new roll
+    const roll = Math.floor(Math.random() * rows.length);
+    rows[roll].classList.add("selected");
+  };
 
 
   const setupCollapsible = function(buttonId, contentId) {
@@ -190,11 +203,20 @@
     // Set up collapsible logic for Base Rules
     setupCollapsible("baseRulesTableTitle", "baseRules");
     
+    // Set up collapsible logic for Roll Tables
+    setupCollapsible("rollTablesTitle", "rollTables");
+    
     // Set up collapsible logic for Active Rules Table
     setupCollapsible("activeRulesTableTitle", "activeRulesTable");
     
     // Set up collapsible logic for Rules Table
     setupCollapsible("rulesTableTitle", "rulesTable");
+    
+    setupCollapsible("paciRollTableTitle", "paciRollTableWrapper");
+    setupCollapsible("soggyRollTableTitle", "soggyRollTableWrapper");
+    setupCollapsible("randomRollTableTitle", "randomRollTableWrapper");
+    setupCollapsible("wettingRollTableTitle", "wettingRollTableWrapper");
+    setupCollapsible("changingRollTableTitle", "changingRollTableWrapper");
   };
 
 
@@ -245,8 +267,195 @@
     </div>
   </div>
   
+  <!-- TODO: It would be nice to eventually have the roll tables be auto-populated using external JSON -->
+  <div id="rollTablesWrapper" class="tableWrapper">
+    <h4 id="rollTablesTitle" class="collapsible">Roll Tables</h4>
+    <div id="rollTables" class="content">
+      <div class="rollTable">
+        <div class="tableHeader">
+          <h5 id="paciRollTableTitle" class="title collapsible">Paci Roll Table</h5>
+          <div class="controls">
+            <a id="rerollPaciTable" class="activeButton vertical-center waves-effect waves-light pink lighten-3 btn" onclick="rollOnRollTable('paciRollTable')">Roll</a>
+          </div>
+        </div>
+        <div id="paciRollTableWrapper" class="pacifier rollTable content">
+          <table id="paciRollTable">
+            <tr>
+              <td>1</td>
+              <td>Lay down for 5 minutes.</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Lay down for 5 minutes.</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Wet your diaper in the next minute or add 15 minutes to your remaining Diaper Time.</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Wet your diaper in the next minute or add 15 minutes to your remaining Diaper Time.</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Add 1 article of babyish/sissy clothing to your outfit if possible. If not, add 30 minutes to your required Diaper Time.</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>Listen to ABDL hypnosis until you are allowed to remove your paci.</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="rollTable">
+        <div class="tableHeader">
+          <h5 id="soggyRollTableTitle" class="title collapsible">Soggy Roll Table</h5>
+          <div class="controls">
+            <a id="rerollSoggyTable" class="activeButton vertical-center waves-effect waves-light pink lighten-3 btn" onclick="rollOnRollTable('soggyRollTable')">Roll</a>
+          </div>
+        </div>
+        <div id="soggyRollTableWrapper" class="soggy rollTable content">
+          <table id="soggyRollTable">
+            <tr>
+              <td>1</td>
+              <td>Over the next 30 minutes, you must carry out an additional 50% of your Paci Time (this does not count towards your required Paci Time).</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Over the next 30 minutes, you must crawl instead of walking.</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Over the next 30 minutes, you are not allowed to sit on any furniture, only lay down on it.</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Over the next 30 minutes, you must double any spankings you receive.</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Over the next 30 minutes, you must double any corner time you must perform.</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>If you wet yourself again before the next time your random timer goes off, then the next time you would roll on this table, perform 1-5.</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="rollTable">
+        <div class="tableHeader">
+          <h5 id="randomRollTableTitle" class="title collapsible">Random Roll Table</h5>
+          <div class="controls">
+            <a id="rerollRandomTable" class="activeButton vertical-center waves-effect waves-light pink lighten-3 btn" onclick="rollOnRollTable('randomRollTable')">Roll</a>
+          </div>
+        </div>
+        <div id="randomRollTableWrapper" class="random rollTable content">
+          <table id="randomRollTable">
+            <tr>
+              <td>1</td>
+              <td>Receive a spanking.</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Receive a spanking.</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Perform your corner time.</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Perform your corner time.</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Receive a spanking followed by corner time.</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>During the next 30-minute period of this task, instead of setting your random timer for 0-30 minutes, you must set the timer for 0-15 minutes in the first 15 minutes, and then 0-15 minutes again in the latter 15 minutes.</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="rollTable">
+        <div class="tableHeader">
+          <h5 id="wettingRollTableTitle" class="title collapsible">Wetting Roll Table</h5>
+          <div class="controls">
+            <a id="rerollWettingTable" class="activeButton vertical-center waves-effect waves-light pink lighten-3 btn" onclick="rollOnRollTable('wettingRollTable')">Roll</a>
+          </div>
+        </div>
+        <div id="wettingRollTableWrapper" class="wetting rollTable content">
+          <table id="wettingRollTable">
+            <tr>
+              <td>1</td>
+              <td>Receive a spanking.</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Perform your corner time.</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Over the next 30 minutes, you must carry out an additional 50% of your Paci Time (this does not count towards your required Paci Time).</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Add 1 article of babyish/sissy clothing to your outfit if possible. If not, receive a spanking and then perform corner time.</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Add 30 minutes to your remaining diaper time.</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>Drink an additional 50% of your required hourly drinking amount over the course of the next 20 minutes (this does not count towards your required hourly drinking).</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="rollTable">
+        <div class="tableHeader">
+          <h5 id="changingRollTableTitle" class="title collapsible">Changing Roll Table</h5>
+          <div class="controls">
+            <a id="rerollChangingTable" class="activeButton vertical-center waves-effect waves-light pink lighten-3 btn" onclick="rollOnRollTable('changingRollTable')">Roll</a>
+          </div>
+        </div>
+        <div id="changingRollTableWrapper" class="changing rollTable content">
+          <table id="changingRollTable">
+            <tr>
+              <td>1</td>
+              <td>Nothing</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Receive a spanking.</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Perform your corner time.</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Perform your paci time.</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>If you haven’t already made a messy diaper during this dare, then insert a suppository. If this is against your limits, you may instead put something squishy in the seat of your new diaper. If this is still against your limits, then after changing, perform 2 then 3 while carrying out 4.</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>If you haven’t already made a messy diaper during this dare, then insert a suppository and change into a double-diaper. If this is against your limits, you may instead put something squishy in the seat of your new diaper. If this is still against your limits, then after changing into a double diaper, perform 2 then 3 while carrying out 4.</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  
   <div id="activeRulesTableWrapper" class="tableWrapper">
-    <div id="activeRulesTableHeader">
+    <div id="activeRulesTableHeader" class="tableHeader">
       <h4 id="activeRulesTableTitle" class="collapsible">Active Rules Table</h4>
       <div id="activeRulesTableControls">
         Number of rules:

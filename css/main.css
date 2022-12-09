@@ -44,6 +44,50 @@ table .other {
   background-color: rgb(114, 223, 196);
 }
 
+.miscellaneous {
+  background-color: rgb(255, 153, 163);
+}
+
+.cornertime {
+  background-color: rgb(255, 153, 207);
+}
+
+.drinking {
+  background-color: rgb(255, 153, 247);
+}
+
+.spanking {
+  background-color: rgb(211, 173, 255);
+}
+
+.changing {
+  background-color: rgb(170, 175, 253);
+}
+
+.clothing {
+  background-color: rgb(128, 210, 255);
+}
+
+.pacifier {
+  background-color: rgb(102, 220, 225);
+}
+
+.other {
+  background-color: rgb(114, 223, 196);
+}
+
+.soggy {
+  background-color: rgb(255, 153, 247);
+}
+
+.random {
+  background-color: rgb(128, 210, 255);
+}
+
+.wetting {
+  background-color: rgb(211, 173, 255);
+}
+
 #rerollButton {
   margin-right: 6px;
 }
@@ -70,7 +114,8 @@ table .other {
 #activeRulesTableHeader h4 {
   margin: 8px 12px;
   float: left;
-  width: 295px;
+  display: inline-flex;
+  height: 72px;
   border-radius: 24px;
 }
 
@@ -93,6 +138,10 @@ table .other {
   background-color: lightpink;
 }
 
+.tableHeader {
+  border-radius: 24px;
+}
+
 #baseRules {
   
 }
@@ -105,10 +154,40 @@ table .other {
   
 }
 
+.rollTable .title {
+  text-align: center;
+  display: inline-block;
+  float: left;
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+  margin: auto;
+}
+
+.rollTable a {
+  margin: 4px 10px;
+}
+
+.rollTable .tableHeader {
+  display: inline-flex;
+}
+
+.rollTable {
+  margin: 16px;
+  padding: 8px;
+  border: 3px solid white;
+  border-radius: 24px;
+}
+
+tr.selected {
+/*  border: 5px solid white;*/
+  background-color: rgb(255, 205, 201);
+  border-radius: 12px;
+}
+
 .collapsible {
   cursor: pointer;
   padding: 18px;
-  width: 100%;
   border: none;
   outline: none;
   border-radius: 24px;
