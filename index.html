@@ -64,6 +64,28 @@
       }
     });
   };
+  
+  
+  // Automatically populate variables table with info from JSON
+  const populateVariablesTable = function() {
+    console.log("Populating variables table...");
+    const variablesTable = document.getElementById("variablesTable");
+    
+    baseVariablesData.forEach(baseVar => {
+      let row = variablesTable.insertRow();
+      $(row).addClass("rulesRow"); // ?
+      $(row).addClass(baseVar.category);
+      
+      let name = row.insertCell(0);
+      let units = row.insertCell(1);
+      let value = row.insertCell(2);
+      
+      name.innerHTML = baseVar.name;
+      units.innerHTML = baseVar.units;
+      $(units).addClass("unitsCell");
+      value.innerHTML = baseVar.value;
+    });
+  };
 
 
   // Generate a object representing a random set of rules.
@@ -183,8 +205,48 @@
     const roll = Math.floor(Math.random() * rows.length);
     rows[roll].classList.add("selected");
   };
+  
+  
+  // TODO: Maybe auto-population of the ENTIRE table isn't a great idea.
+  // Might be better to only autopopulate the actual options and just 
+  // have the high-level elements present in the body from the get-go.
+  /*
+  const populateRollTables = function() {
+    console.log("Populating roll tables...");
+    const rollTables = document.getElementById("rollTables");
+    rollTablesData.forEach(rollTableData => {
+      const rollTable = document.createElement(table);
+      rollTable.classList.add(rollTableData.category);
+      rollTable.classList.add("rollTable");
+      rollTables.appendChild()
+      rollTable.forEach(option => {
+        let row = rulesTable.insertRow();
+        $(row).addClass("rulesRow");
+        $(row).addClass(rule.category);
 
+        let ruleId = row.insertCell(0);
+        let likelihood = row.insertCell(1);
+        let maxStack = row.insertCell(2);
+        let description = row.insertCell(3);
 
+        ruleId.innerHTML = rule.rule_id;
+        likelihood.innerHTML = rule.likelihood;
+        maxStack.innerHTML = rule.max_stacks;
+        description.innerHTML = rule.description;
+      });
+    });
+  };
+  */
+  
+  
+  /*
+  const populateRollTables = function() {
+    console.log("Populating roll tables...");
+    const rollTables = document.getElementById("rollTables");
+  };
+  */
+  
+  
   const setupCollapsible = function(buttonId, contentId) {
     const button = document.getElementById(buttonId);
     button.addEventListener("click", function() {
@@ -212,6 +274,8 @@
     // Set up collapsible logic for Rules Table
     setupCollapsible("rulesTableTitle", "rulesTable");
     
+    setupCollapsible("variablesTableTitle", "variablesTable");
+    
     setupCollapsible("paciRollTableTitle", "paciRollTableWrapper");
     setupCollapsible("soggyRollTableTitle", "soggyRollTableWrapper");
     setupCollapsible("randomRollTableTitle", "randomRollTableWrapper");
@@ -229,6 +293,7 @@
     populateRulesTable();
     const activeRuleset = generateActiveRuleset(20);
     populateActiveRulesTable(activeRuleset);
+    populateVariablesTable();
     setupCollapsibles();
   };
 
@@ -452,6 +517,11 @@
         </div>
       </div>
     </div>
+  </div>
+  
+  <div id="variablesTableWrapper" class="tableWrapper">
+    <h4 id="variablesTableTitle" class="collapsible">Variables</h4>
+    <table id="variablesTable" class="content"></table>
   </div>
   
   <div id="activeRulesTableWrapper" class="tableWrapper">

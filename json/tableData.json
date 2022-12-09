@@ -273,3 +273,93 @@ rulesData = [
     "category": "other"
   }
 ];
+
+rollTablesData = [
+  {
+    "name": "Paci Roll Table",
+    "category": "pacifier",
+    "options": [
+      {
+        "description": "Lay down for 5 minutes."
+      },
+      {
+        "description": "Lay down for 5 minutes."
+      },
+      {
+        "description": "Wet your diaper in the next minute or add 15 minutes to your remaining Diaper Time."
+      },
+      {
+        "description": "Wet your diaper in the next minute or add 15 minutes to your remaining Diaper Time."
+      },
+      {
+        "description": "Add 1 article of babyish/sissy clothing to your outfit if possible. If not, add 30 minutes to your required Diaper Time."
+      },
+      {
+        "description": "Listen to ABDL hypnosis until you are allowed to remove your paci."
+      }
+    ]
+  },
+  {
+    "name": "Soggy Roll Table",
+    "category": "soggy",
+    "options": [
+      {
+        "description": "Over the next 30 minutes, you must carry out an additional 50% of your Paci Time (this does not count towards your required Paci Time)."
+      },
+      {
+        "description": "Over the next 30 minutes, you must crawl instead of walking."
+      },
+      {
+        "description": "Over the next 30 minutes, you are not allowed to sit on any furniture, only lay down on it."
+      },
+      {
+        "description": "Over the next 30 minutes, you must double any spankings you receive."
+      },
+      {
+        "description": "Over the next 30 minutes, you must double any corner time you must perform."
+      },
+      {
+        "description": "If you wet yourself again before the next time your random timer goes off, then the next time you would roll on this table, perform 1-5."
+      }
+    ]
+  }
+];
+
+baseVariablesData = [
+  {
+    "name": "Diaper Time",
+    "units": "minutes",
+    "value": 90,
+    "category": "other"
+  },
+  {
+    "name": "Corner Time",
+    "units": "minutes",
+    "value": 1,
+    "category": "cornertime"
+  },
+  {
+    "name": "Drink Amount",
+    "units": "mL/hour",
+    "value": 400,
+    "category": "drinking"
+  },
+  {
+    "name": "Swats per Spanking",
+    "units": "",
+    "value": 20,
+    "category": "spanking"
+  },
+  {
+    "name": "Paci Time",
+    "units": "minutes/hour",
+    "value": 10,
+    "category": "pacifier"
+  },
+  {
+    "name": "Change Requirement",
+    "units": "% saturation",
+    "value": 60,
+    "category": "soggy"
+  }
+];
