@@ -20,6 +20,11 @@
 
 <script>
 
+  let activeRuleset = [];
+  let condensedActiveRuleset = [];
+  let likelihoodArray = [];
+
+
   // Automatically populate rules table with info from JSON
   const populateRulesTable = function() {
     console.log("Populating rules table...");
@@ -41,14 +46,14 @@
       description.innerHTML = rule.description;
     });
   };
-  
+
 
   // Automatically populate active rules table
-  const populateActiveRulesTable = function(activeRules) {  
+  const populateActiveRulesTable = function() {  
     console.log("Populating active rules table...");
     let activeRulesTable = document.getElementById("activeRulesTable");
     
-    Object.entries(activeRules).forEach(rule => {
+    Object.entries(activeRuleset).forEach(rule => {
       if (rule[1].stacks > 0) {
         let row = activeRulesTable.insertRow();
         $(row).addClass("activeRulesRow");
@@ -64,8 +69,8 @@
       }
     });
   };
-  
-  
+
+
   // Automatically populate variables table with info from JSON
   const populateVariablesTable = function() {
     console.log("Populating variables table...");
@@ -94,7 +99,6 @@
   const generateActiveRuleset = function(numRules) {
     console.log("Generating active ruleset...");
     const activeRules = initializeActiveRuleset(rulesData);
-    const likelihoodArray = createLikelihoodArray(rulesData);
     const maxRules = calcMaxRules(rulesData);
     
     if (numRules > maxRules) {
@@ -115,21 +119,35 @@
         i++;
       }
     }
-    console.log(activeRules);
-    return activeRules;
+    
+    const condensedActiveRules = [];
+    Object.values(activeRules).forEach(rule => {
+      if (rule.stacks > 0) {
+        condensedActiveRules.push(rule);
+      }
+    });
+    console.log(condensedActiveRules);
+    activeRuleset = activeRules;
+    condensedActiveRuleset = condensedActiveRules; // Maybe get rid of this one
   };
 
-  /* TODO
-  const addSingleRule = function() {
-    const likelihoodArray = createLikelihoodArray(rulesData);
-    const roll = Math.floor(Math.random() * likelihoodArray.length);
-    const rolledRuleId = likelihoodArray[roll];
-    if (activeRules[rolledRuleId].stacks <= activeRules[rolledRuleId].max_stacks - 1) {
-      activeRules[rolledRuleId].stacks = activeRules[rolledRuleId].stacks + 1;
-      i++;
+
+  // TODO
+  const addActiveRules = function(numRules) {
+    let i = 0;
+    while (i < numRules) {
+      const roll = Math.floor(Math.random() * likelihoodArray.length);
+      const rolledRuleId = likelihoodArray[roll];
+      if (activeRuleset[rolledRuleId].stacks <= activeRuleset[rolledRuleId].max_stacks - 1) {
+        activeRuleset[rolledRuleId].stacks = activeRuleset[rolledRuleId].stacks + 1;
+        i++;
+      }
     }
   };
-  */
+  
+  
+  
+
 
   // Helper function for generateActiveRuleset
   const initializeActiveRuleset = function() {
@@ -152,14 +170,12 @@
   //   array a number of times equal to that rule's likelihood.
   const createLikelihoodArray = function() {
     console.log("Creating likelihoodArray...");
-    const likelihoodArray = [];
     rulesData.forEach(rule => {
       for (let i = 0; i < rule.likelihood; i++) {
         likelihoodArray.push(rule.rule_id);
       }
     });
     console.log(likelihoodArray);
-    return likelihoodArray;
   };
 
 
@@ -192,8 +208,8 @@
     const activeRuleset = generateActiveRuleset(numRules);
     populateActiveRulesTable(activeRuleset);
   };
-  
-  
+
+
   const rollOnRollTable = function(rollTableId) {
     const rollTable = document.getElementById(rollTableId);
     const rows = rollTable.firstElementChild.children;
@@ -205,8 +221,8 @@
     const roll = Math.floor(Math.random() * rows.length);
     rows[roll].classList.add("selected");
   };
-  
-  
+
+
   // TODO: Maybe auto-population of the ENTIRE table isn't a great idea.
   // Might be better to only autopopulate the actual options and just 
   // have the high-level elements present in the body from the get-go.
@@ -237,16 +253,16 @@
     });
   };
   */
-  
-  
+
+
   /*
   const populateRollTables = function() {
     console.log("Populating roll tables...");
     const rollTables = document.getElementById("rollTables");
   };
   */
-  
-  
+
+
   const setupCollapsible = function(buttonId, contentId) {
     const button = document.getElementById(buttonId);
     button.addEventListener("click", function() {
@@ -284,15 +300,18 @@
   };
 
 
-  const addRule = function() {
-    // TODO
+  const addRule = function(numRules) {
+    addActiveRules(numRules);
+    clearActiveRulesTable();
+    populateActiveRulesTable();
   };
 
 
   const main = function() {
     populateRulesTable();
-    const activeRuleset = generateActiveRuleset(20);
-    populateActiveRulesTable(activeRuleset);
+    createLikelihoodArray();
+    generateActiveRuleset(20);
+    populateActiveRulesTable();
     populateVariablesTable();
     setupCollapsibles();
   };
@@ -532,7 +551,7 @@
         <input id="numRulesInput" type="number" name="numRules" value="20" />
         <a id="rerollButton" class="activeButton vertical-center waves-effect waves-light pink lighten-3 btn" onclick="rerollActiveRulesTable()">Reroll</a>
         or
-        <a id="addButton" class="disabled activeButton vertical-center waves-effect waves-light pink lighten-3 btn" onclick="addRule()">Add one more rule</a>
+        <a id="addButton" class="activeButton vertical-center waves-effect waves-light pink lighten-3 btn" onclick="addRule(1)">Add one more rule</a>
       </div>
     </div>
     <table id="activeRulesTable" class="content">
