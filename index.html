@@ -20,9 +20,11 @@
 
 <script>
 
+  // Globally scoped variables
   let activeRuleset = [];
   let condensedActiveRuleset = [];
   let likelihoodArray = [];
+  let derivedVariablesData = [];
 
 
   // Automatically populate rules table with info from JSON
@@ -76,20 +78,47 @@
     console.log("Populating variables table...");
     const variablesTable = document.getElementById("variablesTable");
     
-    baseVariablesData.forEach(baseVar => {
+    Object.entries(baseVariablesData).forEach(baseVar => {
       let row = variablesTable.insertRow();
-      $(row).addClass("rulesRow"); // ?
-      $(row).addClass(baseVar.category);
+      $(row).addClass("variablesRow");
+      $(row).addClass(baseVar[1].category);
       
       let name = row.insertCell(0);
       let units = row.insertCell(1);
-      let value = row.insertCell(2);
+      let baseValue = row.insertCell(2);
+      let value = row.insertCell(3);
       
-      name.innerHTML = baseVar.name;
-      units.innerHTML = baseVar.units;
+      name.innerHTML = baseVar[1].name;
+      units.innerHTML = baseVar[1].units;
       $(units).addClass("unitsCell");
-      value.innerHTML = baseVar.value;
+      baseValue.innerHTML = baseVariablesData[baseVar[0]].value;
+      value.innerHTML = derivedVariablesData[baseVar[0]];
     });
+  };
+
+
+  // Calculate modified variable values based on base values and active rule stacks
+  const calculateVariables = function() {
+    console.log("Calculating variables...");
+    if (Object.keys(baseVariablesData).includes("diaperTime")) {
+      derivedVariablesData["diaperTime"] = baseVariablesData.diaperTime.value + 30 * activeRuleset["M0"].stacks;
+    }
+    if (Object.keys(baseVariablesData).includes("cornerTime")) {
+      derivedVariablesData["cornerTime"] = baseVariablesData.cornerTime.value + 1 * activeRuleset["C0"].stacks;
+    }
+    if (Object.keys(baseVariablesData).includes("drinkingAmount")) {
+      derivedVariablesData["drinkingAmount"] = baseVariablesData.drinkingAmount.value + 200 * activeRuleset["D0"].stacks;
+    }
+    if (Object.keys(baseVariablesData).includes("swatsPerSpanking")) {
+      derivedVariablesData["swatsPerSpanking"] = baseVariablesData.swatsPerSpanking.value + 5 * activeRuleset["P0"].stacks;
+    }
+    if (Object.keys(baseVariablesData).includes("paciTime")) {
+      derivedVariablesData["paciTime"] = baseVariablesData.paciTime.value + 5 * activeRuleset["B0"].stacks;
+    }
+    if (Object.keys(baseVariablesData).includes("changeRequirement")) {
+      derivedVariablesData["changeRequirement"] = baseVariablesData.changeRequirement.value + 10 * activeRuleset["E5"].stacks;
+    }
+    console.log(derivedVariablesData);
   };
 
 
@@ -106,20 +135,17 @@
       Object.values(activeRules).forEach(rule => {
         rule.stacks = rule.max_stacks;
       });
-      console.log(activeRules);
-      return activeRules;
-    }
-    
-    let i = 0;
-    while (i < numRules) {
-      const roll = Math.floor(Math.random() * likelihoodArray.length);
-      const rolledRuleId = likelihoodArray[roll];
-      if (activeRules[rolledRuleId].stacks <= activeRules[rolledRuleId].max_stacks - 1) {
-        activeRules[rolledRuleId].stacks = activeRules[rolledRuleId].stacks + 1;
-        i++;
+    } else {
+      let i = 0;
+      while (i < numRules) {
+        const roll = Math.floor(Math.random() * likelihoodArray.length);
+        const rolledRuleId = likelihoodArray[roll];
+        if (activeRules[rolledRuleId].stacks <= activeRules[rolledRuleId].max_stacks - 1) {
+          activeRules[rolledRuleId].stacks = activeRules[rolledRuleId].stacks + 1;
+          i++;
+        }
       }
     }
-    
     const condensedActiveRules = [];
     Object.values(activeRules).forEach(rule => {
       if (rule.stacks > 0) {
@@ -127,12 +153,12 @@
       }
     });
     console.log(condensedActiveRules);
+    
     activeRuleset = activeRules;
     condensedActiveRuleset = condensedActiveRules; // Maybe get rid of this one
   };
 
 
-  // TODO
   const addActiveRules = function(numRules) {
     let i = 0;
     while (i < numRules) {
@@ -144,9 +170,6 @@
       }
     }
   };
-  
-  
-  
 
 
   // Helper function for generateActiveRuleset
@@ -191,9 +214,9 @@
   };
 
 
-  const clearActiveRulesTable = function() {
-    console.log("Clearing active rules table...");
-    let rows = document.getElementsByClassName("activeRulesRow");
+  const clearTable = function(rowsClassName) {
+    console.log("Clearing table with rows: " + rowsClassName);
+    let rows = document.getElementsByClassName(rowsClassName);
     while (rows.length > 0) {
       rows[0].remove();
     }
@@ -202,11 +225,9 @@
 
   const rerollActiveRulesTable = function() {
     console.log("REROLLING!");
-    const numRulesInput = document.getElementById("numRulesInput");
-    const numRules = numRulesInput.value;
-    clearActiveRulesTable();
-    const activeRuleset = generateActiveRuleset(numRules);
-    populateActiveRulesTable(activeRuleset);
+    const numRules = document.getElementById("numRulesInput").value;
+    generateActiveRuleset(numRules);
+    updateRulesTables();
   };
 
 
@@ -262,6 +283,21 @@
   };
   */
 
+  
+  const addRule = function(numRules) {
+    addActiveRules(numRules);
+    updateRulesTables();
+  };
+  
+  
+  const updateRulesTables = function() {
+    calculateVariables();
+    clearTable("variablesRow");
+    populateVariablesTable();
+    clearTable("activeRulesRow");
+    populateActiveRulesTable();
+  };
+
 
   const setupCollapsible = function(buttonId, contentId) {
     const button = document.getElementById(buttonId);
@@ -300,18 +336,12 @@
   };
 
 
-  const addRule = function(numRules) {
-    addActiveRules(numRules);
-    clearActiveRulesTable();
-    populateActiveRulesTable();
-  };
-
-
   const main = function() {
     populateRulesTable();
     createLikelihoodArray();
     generateActiveRuleset(20);
     populateActiveRulesTable();
+    calculateVariables();
     populateVariablesTable();
     setupCollapsibles();
   };
@@ -325,6 +355,7 @@
     <h4 id="baseRulesTableTitle" class="collapsible">Base Rules</h4>
     <div id="baseRules" class="content">
       <div class="baseRuleGroupWrapper">
+        <img src="images/Roll%20Diagram%20Full.png">
         <h5>Random Rolls</h5>
         <div class="baseRule">Every 30 minutes, you must set a random timer for between 0 & 30 minutes.</div>
         <div class="baseRule">Whenever your timer goes off, you must roll on the Random Roll Table.</div>
@@ -343,9 +374,9 @@
         <h5>Other Rules</h5>
         <ul>
           <li class="baseRule">If your random timer goes off while you are being spanked or in corner time, you must wait to perform your required rolls until after you are finished with all spankings & corner time you have assigned.</li>
-          <li class="baseRule">If your random timer goes off while you are being spanked or in corner time, you must wait to perform your required rolls until after you are finished with all spankings & corner time you have assigned.</li>
-          <li class="baseRule">If your random timer goes off while you are being spanked or in corner time, you must wait to perform your required rolls until after you are finished with all spankings & corner time you have assigned.</li>
-          <li class="baseRule">If your random timer goes off while you are being spanked or in corner time, you must wait to perform your required rolls until after you are finished with all spankings & corner time you have assigned.</li>
+          <li class="baseRule">If you stay in a messy diaper for 30 minutes, then you may ignore your required saturation percentage and change (once you've also fulfilled any additional requirements imposed by your rules).</li>
+          <li class="baseRule">Every time you break a rule, you must add one more rule to your ruleset and abide by it for the remainder of the dare.</li>
+          <li class="baseRule">More base rules will be put here as I think of them...</li>
         </ul>
       </div>
     </div>
@@ -540,7 +571,14 @@
   
   <div id="variablesTableWrapper" class="tableWrapper">
     <h4 id="variablesTableTitle" class="collapsible">Variables</h4>
-    <table id="variablesTable" class="content"></table>
+    <table id="variablesTable" class="content">
+      <tr>
+        <th></th>
+        <th>units</th>
+        <th>base amount</th>
+        <th>your amount (modified by your ruleset)</th>
+      </tr>
+    </table>
   </div>
   
   <div id="activeRulesTableWrapper" class="tableWrapper">

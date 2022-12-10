@@ -325,41 +325,41 @@ rollTablesData = [
   }
 ];
 
-baseVariablesData = [
-  {
+baseVariablesData = {
+  "diaperTime": {
     "name": "Diaper Time",
     "units": "minutes",
     "value": 90,
     "category": "other"
   },
-  {
+  "cornerTime": {
     "name": "Corner Time",
     "units": "minutes",
     "value": 1,
     "category": "cornertime"
   },
-  {
-    "name": "Drink Amount",
+  "drinkingAmount": {
+    "name": "Drinking Amount",
     "units": "mL/hour",
     "value": 400,
     "category": "drinking"
   },
-  {
+  "swatsPerSpanking": {
     "name": "Swats per Spanking",
     "units": "",
     "value": 20,
     "category": "spanking"
   },
-  {
+  "paciTime": {
     "name": "Paci Time",
     "units": "minutes/hour",
     "value": 10,
     "category": "pacifier"
   },
-  {
+  "changeRequirement": {
     "name": "Change Requirement",
     "units": "% saturation",
     "value": 60,
     "category": "soggy"
   }
-];
+};
