@@ -14,3 +14,20 @@ Wave 1 (MVP)
 
 Wave 2
 1. 
+
+
+
+Enhancement Ideas
+- It would be cool to have a means of importing & exporting rulesets.
+- Some way to choose rules - create custom rulesets
+- Maybe a way to add or modify rules??
+- Have rule descriptions in the active rules table automatically update values within the rule itself based on stacking effect and number of active stacks
+    - Probably want to leave out parenthesized stack effect from rule description
+      - Players could still see said stack effect in the rule description in the rules table
+      - This would involve changing the JSON structure
+        - Separate the stack effect text from the reset of the rule's text.
+        - Somehow include logic to modify text based on number of stacks.
+          - Would likely want some sort of updateRuleDescription function to tackle this. It would run whenever rules are added/removed (i.e. whenever the activeRuleset global var is modified, i.e. whenever updateRulesTables is run).
+    - This one would be a lot of work for only a little return. I doubt most players would have issues with just figuring it out the way it's set up now, but who knows?
+    - In any case, definitely an enhancement for later, if ever.         
+- 
