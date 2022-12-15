@@ -197,8 +197,8 @@ rulesData = [
   },
   {
     "rule_id": "A0",
-    "likelihood": 7,
-    "max_stacks": 12,
+    "likelihood": 12,
+    "max_stacks": 8,
     "description": "Add 1 article of babyish/sissy clothing to your outfit if possible. If not, add 30 minutes to your required Diaper Time.",
     "category": "clothing"
   },
@@ -267,7 +267,7 @@ rulesData = [
   },
   {
     "rule_id": "X2",
-    "likelihood": 4,
+    "likelihood": 3,
     "max_stacks": 2,
     "description": "You must accept an additional 5 rules. (+5 per stack - max 2 stacks)",
     "category": "other"
