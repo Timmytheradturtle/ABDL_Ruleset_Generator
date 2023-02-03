@@ -15,8 +15,8 @@ rulesData = [
   },
   {
     "rule_id": "C0",
-    "likelihood": 5,
-    "max_stacks": 12,
+    "likelihood": 4,
+    "max_stacks": 4,
     "description": "Add 1 minute to your required corner time.",
     "category": "cornertime"
   },
@@ -45,7 +45,7 @@ rulesData = [
     "rule_id": "C4",
     "likelihood": 4,
     "max_stacks": 4,
-    "description": "Before beginning your corner time, you must set a random timer with a min of 0 seconds and a max of 3 minutes longer than your total corner time. If the timer goes off while you are still in corner time, then you must immediately try to wet yourself. If you can\'t, add 15 minutes to your required diaper time. (-30 seconds timer max per stack - max 4 stacks)",
+    "description": "Before beginning your corner time, you must set a random timer with a min of 0 seconds and a max of 3 minutes longer than your total corner time. If the timer goes off while you are still in corner time, then you must immediately try to wet yourself. If you haven\'t successfully wet by the time you exit corner time, add 15 minutes to your required Diaper Time. (-30 seconds timer max per stack - max 4 stacks)",
     "category": "cornertime"
   },
   {
@@ -112,6 +112,13 @@ rulesData = [
     "category": "drinking"
   },
   {
+    "rule_id": "D7",
+    "likelihood": 3,
+    "max_stacks": 1,
+    "description": "Whenever you suck on something to drink, you must complete a pacifier time afterwards (it can count towards your every hour pacifier time, if you haven't already performed it) (Cannot stack)",
+    "category": "drinking"
+  },
+  {
     "rule_id": "P0",
     "likelihood": 5,
     "max_stacks": 6,
@@ -142,8 +149,8 @@ rulesData = [
   {
     "rule_id": "P4",
     "likelihood": 3,
-    "max_stacks": 4,
-    "description": "For every 5 spanks you receive, add 1 minute to your required diaper time. (+1 minute per stack - max 4 stacks - You cannot gain more than 15 additional minutes per spanking)",
+    "max_stacks": 2,
+    "description": "For every 5 spanks you receive, add 1 minute to your required diaper time. (+1 minute per stack - max 2 stacks - You cannot gain more than 15 additional minutes per spanking)",
     "category": "spanking"
   },
   {
@@ -154,8 +161,15 @@ rulesData = [
     "category": "spanking"
   },
   {
-    "rule_id": "E0",
+    "rule_id": "P6",
     "likelihood": 2,
+    "max_stacks": 1,
+    "description": "Whenever you are spanked in a wet diaper, you must double the number of spanks received. (Cannot stack)",
+    "category": "spanking"
+  },
+  {
+    "rule_id": "E0",
+    "likelihood": 4,
     "max_stacks": 4,
     "description": "You must be sucking on a pacifier for at least 15 continuous minutes before you are allowed to change. (+10 per stack - max 4 stacks)",
     "category": "changing"
@@ -177,22 +191,22 @@ rulesData = [
   {
     "rule_id": "E3",
     "likelihood": 4,
-    "max_stacks": 3,
-    "description": "You must perform 50% of your corner time before you are allowed to change. (+50% per stack - max 3 stacks)",
+    "max_stacks": 2,
+    "description": "You must perform 100% of your corner time before you are allowed to change. (+50% per stack - max 2 stacks)",
     "category": "changing"
   },
   {
     "rule_id": "E4",
     "likelihood": 2,
     "max_stacks": 3,
-    "description": "Whenever you meet all other requirements for changing, you must roll 1d6 and then wait that many minutes before you are allowed to change. (+1d6 per stack - max 3 stacks)",
+    "description": "Whenever you meet all other requirements for changing, you must roll 1d20 and then wait that many minutes before you are allowed to change. You may change before waiting the entire time, but only if you add double the remaining time to your required Diaper Time. (+1d20 per stack - max 3 stacks)",
     "category": "changing"
   },
   {
     "rule_id": "E5",
-    "likelihood": 4,
+    "likelihood": 6,
     "max_stacks": 3,
-    "description": "Your diaper must be 10% more saturated in order to change. (+10% per stack - max 3 stacks)",
+    "description": "Your diaper must be 20% more saturated in order to change. (+20% per stack - max 2 stacks)",
     "category": "changing"
   },
   {
@@ -240,20 +254,20 @@ rulesData = [
   {
     "rule_id": "B2",
     "likelihood": 4,
-    "max_stacks": 1,
-    "description": "Whenever you’re normally allowed to remove your pacifier, you must roll a d6. If you roll lower than a 4, then you are not allowed to remove your paci until you wet your diaper or until 5 * [your roll] minutes pass. (Cannot stack)",
+    "max_stacks": 3,
+    "description": "Whenever you’re normally allowed to remove your pacifier, you must roll a d6. If you roll lower than a 4, then you are not allowed to remove your paci until you wet your diaper. (-1 per stack - max 3 stacks)",
     "category": "pacifier"
   },
   {
     "rule_id": "B3",
     "likelihood": 5,
     "max_stacks": 1,
-    "description": "Whenever you put a pacifier in your mouth, roll a d6. If your roll is lower than the number of baby/sissy clothing items you have on (including your diaper), then you must actively try to wet yourself for one whole minute. If you fail to wet, then you must flip a coin where heads is a spanking and tails is corner time. (Cannot stack)",
+    "description": "Whenever you put a pacifier in your mouth, roll a d6. If your roll is lower than the number of baby/sissy clothing items you have on (including your diaper), then you must try to wet yourself. If you fail to wet, then you must flip a coin where heads is a spanking and tails is corner time. (Cannot stack)",
     "category": "pacifier"
   },
   {
     "rule_id": "X0",
-    "likelihood": 4,
+    "likelihood": 2,
     "max_stacks": 2,
     "description": "If you ever meet all of the following criteria at once...\n- in a wet diaper\n- sucking on a pacifier\n- not allowed to stand freely\n- being punished (spanked or in corner time)\n...then roll a d6. If you roll a 1, increase your diaper time by 30 minutes. (+30 per stack - max 2 stacks)",
     "category": "other"
@@ -267,9 +281,30 @@ rulesData = [
   },
   {
     "rule_id": "X2",
-    "likelihood": 3,
+    "likelihood": 2,
+    "max_stacks": 3,
+    "description": "You must accept an additional 4 rules. (+3 per stack - max 3 stacks)",
+    "category": "other"
+  },
+  {
+    "rule_id": "X3",
+    "likelihood": 4,
+    "max_stacks": 1,
+    "description": "The dare only ends once you earn a change AFTER your Diaper Time is up.",
+    "category": "other"
+  },
+  {
+    "rule_id": "X4",
+    "likelihood": 2,
     "max_stacks": 2,
-    "description": "You must accept an additional 5 rules. (+5 per stack - max 2 stacks)",
+    "description": "You are not allowed to end this dare unless you've made a messy diaper at least 60 minutes before finishing. If this is against your limits, you may instead put something squishy in the seat of your diaper at least 60 minutes before finishing. If this is still aginst your limits, re-roll to add another rule. (+60 minutes per stack - max 2 stacks)",
+    "category": "other"
+  },
+  {
+    "rule_id": "X5",
+    "likelihood": 2,
+    "max_stacks": 1,
+    "description": "You are not allowed to end this dare unless you meet all other criteria and your diaper is leaking (Cannot stack)",
     "category": "other"
   }
 ];
@@ -359,7 +394,7 @@ baseVariablesData = {
   "changeRequirement": {
     "name": "Change Requirement",
     "units": "% saturation",
-    "value": 60,
+    "value": 50,
     "category": "soggy"
   }
 };
