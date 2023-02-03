@@ -1,33 +1,46 @@
 Roadmap
 
-Wave 1 (MVP)
-1. Get the basic HTML functionality in place
-  1a. Have a table (for the active rules)
-  1b. Have an input for number of rules
-  1c. Have a button for rerolling
-2. Get the basic JS functionality in place
-  2a. Generate random rules array
-  2b. Use array to get list of active rules
-  2c. Use list of active rules to populate rules table
-3. Tie it all together
-  3a. Have button do 2a, 2b, & 2c above.
-
-Wave 2
-1. 
-
-
+Next Up:
++ Next, I'd like to focus on implementing functionality around custom rulesets.
+  - Ability to import/export a ruleset (3)
+    - This would likely be done by just having the site spit out some kind of code that represents the ruleset. If said code was just raw JSON, then that might also provide a means for people to create custom rulesets without me needing to explicityly make a UI for it - they'd just modify the JSON based on what they see and feed it back in. Should be simple enough for most people to do if they want to.
+  - Ability to manually assemble a ruleset (5)
+    - Might roll into previous item based on comments for said item above.
 
 Enhancement Ideas
-- It would be cool to have a means of importing & exporting rulesets.
-- Some way to choose rules - create custom rulesets
-- Maybe a way to add or modify rules??
-- Have rule descriptions in the active rules table automatically update values within the rule itself based on stacking effect and number of active stacks
-    - Probably want to leave out parenthesized stack effect from rule description
-      - Players could still see said stack effect in the rule description in the rules table
-      - This would involve changing the JSON structure
-        - Separate the stack effect text from the reset of the rule's text.
-        - Somehow include logic to modify text based on number of stacks.
-          - Would likely want some sort of updateRuleDescription function to tackle this. It would run whenever rules are added/removed (i.e. whenever the activeRuleset global var is modified, i.e. whenever updateRulesTables is run).
++++ Have rules in the active rules table automatically update values within their description text based on stacking effect and number of active stacks. (5)
+    ++ EDIT: Drawbacks of this enhancement...
+      + Using the approach outlined below, if I wanted to change the effect of a stack for a given rule, then I would need to make changes to both the parenthesized stack effect text AS WELL AS the description text value adjustment logic I'd be introducing with this enhancement.
+      + Another drawback to this whole thing is that it would make it nigh impossible for users to create their own rulesets since there would be hard-coded logic based on the actual rules themselves.
+        - Perhaps one way around this would be to allow users to toggle this feature such that they could either have the text dynamically update itself based on stack, OR they could opt to see the parenthesized stack effect alongside the unmodified rule description text and then just do the math themselves using the effect and the number of stacks...
+        - Maybe I could create some way for users to utilize the replacement framework, but that would be VERY messy, tons of work, and also probably nearly impossible for any user to sufficiently understand... :(
+    ++ What to do with the parenthesized stack effect at the end of the description text...
+      + I measured the pros and cons of a couple approaches below. Pretty sure removing the parenthesized text from the active rules table descriptions would be the best approach. Read below for rationale.
+        - OPTION 1: Leave out parenthesized stack effect from rule descriptions in active rules table         - Players could still see said stack effect in the rule description in the rules table.
+          - Players don't really need to see the stack effect in the active rules table anyway.
+            - That information would only be relevant to them if they were manually making changes to the ruleset themselves. Otherwise, they get what they get.
+          - Including the parenthesized stack effects AND having the description text get auto-updated would likely be confusing to many players. They may assume they still need to add the stack effect themselves (after all, that IS how it's CURRENTLY set up...).
+        - Change how I represent this information to the player
+      + How would I implement this?
+        - OPTION 1: Change the JSON structure to separate stack effect text from the rest of the description text.
+          - This is probably my best option. It's likely less work in the longrun, AND it would provide more flexibility further down the road if I wanted to make further description-related adjustments.
+    ++ How to dynamically update the values within description text based on stack & stack effect...
+      + Separate the stack effect text from the rest of the rule's text.
+      - Somehow include logic to modify text based on number of stacks.
+        - Would likely want some sort of updateRuleDescription function to tackle this. It would run whenever rules are added/removed (i.e. whenever the activeRuleset global var is modified, i.e. whenever updateRulesTables is run).
+        - This would still involve some form of framework to be built into the text itself such that it could be properly parsed by the logic and then manipulated to show the information I want it to.
+    
+      
+      
     - This one would be a lot of work for only a little return. I doubt most players would have issues with just figuring it out the way it's set up now, but who knows?
     - In any case, definitely an enhancement for later, if ever.         
-- 
+- Set up system for automatically tracking time segments for the player.
+  - For example, have them hit a "Start Dare" button whenever they start, and then based on that, show them the time segments.
+  - Also could automate random timers.
++ Allow the player to fully customize the rules pool.
+  - Basically allow CRUD operations on master ruleset JSON.
+  - The fastest & easiest way to do this would probably be to have a text field the user can paste a JSON object into and then a button that would then tell the JS to use that JSON to override the global rulesData JSON object defined in tableData.json with whatever the user input.
+    - The biggest drawback to this approach is that the user could provide invalid JSON, or even valid JSON with a structure that isn't valid for the parsing logic.
+    - Introducing a UI to do this would remove this issue (...mostly. The user may still be able to input bogus values. It would depend on what kinds of controls I provide. In general, as long as I avoid giving the user text fields to mess with and appropriately limit the controls I DO provide, they shouldn't be able to get the rulesData JSON into an illegal/invalid state... probably...).
+  
+  
