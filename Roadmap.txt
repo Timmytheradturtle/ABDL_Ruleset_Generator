@@ -8,6 +8,10 @@ Next Up:
     - Might roll into previous item based on comments for said item above.
 
 Enhancement Ideas
++++ ROUGELIKE MODE
+    ++ Currently, this thing is set up to just spit out a random set of rules whenever you hit the button. That's cool and all, but what if we made things a little more meaningful and gave the player some more agency in all this? Well, that's what Roguelike Mode would seek to accomplish.
+    ++ Basically, Roguelike Mode would be a mode you could do the dare in whereby instead of just receiving a random set of n rules and then using them for the entire dare, you will instead be confronted with n sets of m rules, where you will be forced to select one rule from each of the n sets. This means that the ruleset the player ultimately ends up with will be much more tailored to their preferences.
+    ++ This also opens up the possibility of having the player add more and more rules as the dare goes on, but this is probably making things too complicated...
 +++ Have rules in the active rules table automatically update values within their description text based on stacking effect and number of active stacks. (5)
     ++ EDIT: Drawbacks of this enhancement...
       + Using the approach outlined below, if I wanted to change the effect of a stack for a given rule, then I would need to make changes to both the parenthesized stack effect text AS WELL AS the description text value adjustment logic I'd be introducing with this enhancement.
