@@ -205,7 +205,7 @@ rulesData = [
   {
     "rule_id": "E5",
     "likelihood": 6,
-    "max_stacks": 3,
+    "max_stacks": 2,
     "description": "Your diaper must be 20% more saturated in order to change. (+20% per stack - max 2 stacks)",
     "category": "changing"
   },
