@@ -3,6 +3,90 @@ body {
   color: white;
 }
 
+.mainContainer {
+	
+}
+
+.sideBox {
+	position: fixed; 
+  top: 5%; 
+  left: 0; 
+  width: 250px; 
+  height: 90%; 
+	border: 3px solid white;
+	border-radius: 24px;
+	background-color: #ff91a2;
+	padding: 12px 0px;
+	margin-left: 15px;
+  overflow-y: auto;
+}
+
+#sideBoxTitle {
+	text-align: center;
+	margin: 0px 0px 6px 0px;;
+	font-weight: 600;
+}
+
+/* Flexbox variant for fixed sideBoxTitle
+
+.sideBox {
+  position: fixed;
+  top: 5%;
+  left: 0;
+  width: 250px;
+  height: 90%;
+  border: 3px solid white;
+	border-radius: 24px;
+	background-color: #ff91a2;
+  padding: 12px 0px;
+  margin-left: 15px;
+  display: flex; 
+  flex-direction: column; 
+}
+
+#sideBoxTitle {
+	text-align: center;
+	margin: 0px 0px 6px 0px;
+	font-weight: 600;
+  flex-shrink: 0; 
+}
+
+.scrollContent {
+  overflow-y: auto; 
+  flex-grow: 1; 
+}
+
+#conditionsContent {
+
+}
+*/
+
+.condition {
+  padding: 0px 12px;
+  background-color: #df6084;
+}
+
+.conditionEffect {
+  padding: 0px 8px 0px 20px;
+	background-color: #ff91a2;
+}
+
+.condition:hover, .conditionEffect:hover, #sideBoxTitle:hover {
+  cursor: pointer;
+}
+
+.expanded::before {
+  content: "▽ "; /*A down arrow symbol - \25B7 or &#9655;*/
+}
+
+.collapsed::before {
+  content: "▷ "; /*A right arrow symbol - \25BD or &#9661;*/
+}
+
+.mainContent {
+	margin-left: 250px; /* Should be the same as the sideBox's total width */
+}
+
 h2 {
   text-align: center;
   margin: auto;
@@ -11,6 +95,48 @@ h2 {
 img {
   width: 100%;
 }
+
+ul {
+  padding-left: 30px;
+}
+
+.baseRuleGroupWrapper h5 {
+  text-shadow:
+    -1px -1px 0 #9d2828,
+    1px -1px 0 #9d2828,
+    -1px 1px 0 #9d2828,
+    1px 1px 0 #9d2828;
+}
+
+.highlight {
+  text-shadow:
+    -1px -1px 0 #9d2828,
+    1px -1px 0 #9d2828,
+    -1px 1px 0 #9d2828,
+    1px 1px 0 #9d2828;
+}
+
+#bodyWritingSpan {
+  color: darkorchid;
+}
+
+#roll3d10Span {
+  color: darkorchid;
+}
+
+/*
+  text-shadow:
+    -1px -1px 0 #ca9191,
+    1px -1px 0 #ca9191,
+    -1px 1px 0 #ca9191,
+    1px 1px 0 #ca9191;  
+
+  text-shadow:
+    -1px -1px 0 #bb6a6a,
+    1px -1px 0 #bb6a6a,
+    -1px 1px 0 #bb6a6a,
+    1px 1px 0 #bb6a6a;
+*/
 
 table {
   color: white;
@@ -53,6 +179,10 @@ table .other {
   background-color: rgb(114, 223, 196);
 }
 
+table .roll {
+  background-color: rgb(165, 210, 111);
+}
+
 .miscellaneous {
   background-color: rgb(255, 153, 163);
 }
@@ -85,6 +215,10 @@ table .other {
   background-color: rgb(114, 223, 196);
 }
 
+.roll {
+  background-color: rgb(114, 223, 196);
+}
+
 .soggy {
   background-color: rgb(255, 153, 247);
 }
@@ -105,32 +239,144 @@ table .other {
   margin: 0px 6px;
 }
 
+.RulesTableStackCell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.RulesTableStackSpan {
+  min-width: 16px;
+  text-align: left;
+}
+
+.addStack {
+  width: 24px;
+  height: 24px;
+  font-weight: bold;
+  margin: 0;
+  line-height: unset;
+  padding: 0px 6px;
+}
+
+.removeStack {
+  width: 24px;
+  height: 24px;
+  font-weight: bold;
+  margin: 0;
+  line-height: unset;
+  padding: 0px 6px;
+}
+
+.calculatedValue {
+  color: red;
+}
+
+#diaperTimeCustomInput {
+  width: 60px;
+  text-align: left;
+  color: #ff0086;
+  margin-bottom: 4px;
+  height: 40px;
+}
+
 #numRulesInput {
   width: 48px;
   text-align: center;
-  color: white;
+  color: #ff0086;
+}
+
+#A0_MissingCountInput, #A0_MissingCountInput_AllRules {
+  width: 48px;
+  text-align: center;
+  color: #ff0086;
 }
 
 #activeRulesTableControls {
-  width: 504px;
-  float: right;
+  width: 280px;
   padding: 2px 6px 0px 12px;
   border-radius: 12px;
   background-color: rgb(255, 209, 209);
-  margin: 16px;
+  margin: 16px auto;
+  color: #7d4663;
 }
 
 #activeRulesTableHeader h4 {
   margin: 8px 12px;
-  float: left;
-  display: inline-flex;
-  height: 72px;
   border-radius: 24px;
+  overflow: auto;
+  width: auto;
 }
 
 #activeRulesTableHeader {
-  height: 92px;
+  height: auto;
   border-radius: 24px;
+  text-align:center;
+}
+
+#activeRulesTableWrapper {
+  overflow: auto;
+}
+
+#ruleCount {
+	width: 100%;
+}
+
+#lastRolled {
+	padding-bottom: 12px;
+	width: 100%;
+}
+
+@media screen and (min-width: 1205px) {
+  #activeRulesTableControls {
+    width: 504px;
+    float: right;
+    padding: 2px 6px 0px 12px;
+    border-radius: 12px;
+    background-color: rgb(255, 209, 209);
+    margin: 16px;
+    color: #7d4663;
+  }
+
+  #activeRulesTableHeader h4 {
+    margin: 8px 12px;
+    float: left;
+    border-radius: 24px;
+    overflow: auto;
+    width: max(305px, calc(100% - 560px));
+  }
+  
+  #activeRulesTableHeader {
+  height: 126px;
+  border-radius: 24px;
+  text-align:unset;
+  }
+  
+  #ruleCount {
+    margin-top: 0px;
+    width: 50%;
+    float: left;
+  }
+
+  #lastRolled {
+    margin-top: 0px;
+    width: 50%;
+    float: right;
+  }
+}
+
+.lastRolledRule {
+  outline: #DF1A5B ridge 3px;
+  outline-offset: -5px;
+  border-radius: 10px;
+}
+
+#ruleCountNumber {
+	color: #ff0086;
+}
+
+#lastRolledID {
+	color: #ff0086;
 }
 
 #rulesTableTitle {
@@ -140,7 +386,7 @@ table .other {
 }
 
 .tableWrapper {
-  margin: 50px;
+  margin: 50px 30px;
   padding: 12px;
   border: 3px solid white;
   border-radius: 24px;
@@ -181,6 +427,10 @@ table .other {
   display: inline-flex;
 }
 
+.rollTable table tr {
+  display: block;
+}
+
 .rollTable {
   margin: 16px;
   padding: 8px;
@@ -210,4 +460,38 @@ tr.selected {
 .content {
   display: none;
   overflow: hidden;
+}
+
+.hidden {
+  display: none !important;
+}
+
+td, th {
+	padding: 10px 5px;
+}
+
+.activeRulesRow td:first-child, .activeRulesRow th:first-child, .activeRulesRow td:nth-child(2) {
+  text-align: center;
+}
+
+.notConditionListRule {
+  color: red;
+}
+
+#exportImportTextarea {
+  background-color: #fdecf4;
+  min-height: 300px;
+  height:auto;
+  margin: 15px 1%;
+  width: 98%;
+  max-width: 98%;
+}
+
+@keyframes flashBackground {
+  0%, 100% { background-color: var(--initial-color); }
+  50% { background-color: #85c480; }
+}
+
+.flash-active {
+  animation: flashBackground 0.5s infinite;
 }

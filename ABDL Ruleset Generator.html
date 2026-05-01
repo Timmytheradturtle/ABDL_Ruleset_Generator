@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="description" content="ABDL Ruleset Generator (BETA)">
+  <meta name="author" content="Timmy Wormwood">
+  <meta charset="UTF-8">
+  <title>ABDL Ruleset Generator (BETA)</title>
+  
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="json/tableData.json"></script>
+  
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!--Import materialize.css-->
+  <link type="text/css" rel="stylesheet" href="css/materialize.css"  media="screen,projection"/>
+  
+  <link rel="stylesheet" href="css/main.css">
+
+  <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+
+<script>
+
+  // Globally scoped variables
+  let activeRuleset = [];
+  let condensedActiveRuleset = [];
+  let likelihoodArray = [];
+  let rulesVariablesData = [];
+  let customVariablesData = [];
+  customVariablesData["diaperTime"] = 0;
+  let derivedVariablesData = [];
+  let lastRolledRuleID = "-";
+  let lastRoledRuleIDArray = [];
+  let A0_inputValue = 0;
+  
+
+  // Automatically populate rules table with info from JSON
+  const populateRulesTable = function() {
+    console.log("Populating rules table...");
+    const rulesTable = document.getElementById("rulesTable");
+    
+    rulesData.forEach(rule => {
+      let row = rulesTable.insertRow();
+      $(row).addClass("rulesRow");
+      $(row).addClass(rule.category);
+      
+      let ruleId = row.insertCell(0);
+      let likelihood = row.insertCell(1);
+      let maxStack = row.insertCell(2);
+      let stack = row.insertCell(3);
+      let description = row.insertCell(4);
+      
+      ruleId.innerHTML = rule.rule_id;
+      likelihood.innerHTML = rule.likelihood;
+      maxStack.innerHTML = rule.max_stacks;
+      stack.innerHTML = "<span id='RulesTableStack_" + rule.rule_id + "' class='RulesTableStackSpan'>0</span><button class='addStack activeButton vertical-center waves-effect waves-light pink lighten-3 btn' onclick='addRuleStack(\"" + rule.rule_id + "\")'>+</button><button class='removeStack activeButton vertical-center waves-effect waves-light pink lighten-3 btn' onclick='removeRuleStack(\"" + rule.rule_id + "\")'>&minus;</button>";
+      stack.classList.add("RulesTableStackCell");
+      description.innerHTML = rule.description.replace(/_Value/g, "_Value_AllRules").replace(/A0_MissingCountInput/g, "A0_MissingCountInput_AllRules");
+      
+      // Add class for the rule id cell if it is among the rules not handled by the "Active conditions" sidebar.
+      if (notConditionListOrAutocalcRules.includes(rule.rule_id)) {
+        ruleId.classList.add("notConditionListRule");
+      }
+    });
+  };
+
+
+  // Automatically populate active rules table
+  const populateActiveRulesTable = function() {
+    console.log("Populating active rules table...");
+    let activeRulesTable = document.getElementById("activeRulesTable");
+    
+    Object.entries(activeRuleset).forEach(rule => {
+      if (rule[1].stacks > 0) {
+        let row = activeRulesTable.insertRow();
+        $(row).attr("id", rule[0]);
+        $(row).addClass("activeRulesRow");
+        $(row).addClass(rule[1].category);
+        
+        if (lastRoledRuleIDArray.includes(rule[0])) {
+          $(row).addClass("lastRolledRule");
+        }
+        
+        let ruleId = row.insertCell(0);
+        let stacks = row.insertCell(1);
+        let description = row.insertCell(2);
+
+        ruleId.innerHTML = rule[0];
+        stacks.innerHTML = rule[1].stacks;
+        description.innerHTML = rule[1].description;
+        
+        // Add class for the rule id cell if it is among the rules not handled by the "Active conditions" sidebar.
+        if (notConditionListOrAutocalcRules.includes(rule[0])) {
+          ruleId.classList.add("notConditionListRule");
+        }
+    
+      //Calculates and updates the inner values inside the rule text
+      if (rule[1].per_additional_stack != "") {
+        let spanID = rule[1].rule_id + "_Value";
+        rule[1].total_value = rule[1].starting_value + (rule[1].per_additional_stack * (rule[1].stacks - 1));
+        document.getElementById(spanID).textContent = rule[1].total_value;
+      }
+      if (rule[1].rule_id == "A0") {
+        //Auto-update diaper time when the input box at rule A0 changes.
+        document.getElementById('A0_MissingCountInput').addEventListener('input', function(event) {
+          console.log('A0 input changed, recalculating variables');
+          A0_inputValue = event.target.value;
+          calculateVariables();
+          clearTable("variablesRow");
+          populateVariablesTable();
+        });
+      }
+      }
+    });
+    
+    updateConditions();
+  };
+
+
+  // Automatically populate variables table with info from JSON
+  const populateVariablesTable = function() {
+    console.log("Populating variables table...");
+    const variablesTable = document.getElementById("variablesTable");
+    
+    Object.entries(baseVariablesData).forEach(baseVar => {
+      let row = variablesTable.insertRow();
+      $(row).addClass("variablesRow");
+      $(row).addClass(baseVar[1].category);
+      
+      let name = row.insertCell(0);
+      let units = row.insertCell(1);
+      let baseValue = row.insertCell(2);
+      let fromRules = row.insertCell(3);
+      let custom = row.insertCell(4);
+      let totalValue = row.insertCell(5);
+      let customAdd = row.insertCell(6);
+      
+      name.innerHTML = baseVar[1].name;
+      units.innerHTML = baseVar[1].units;
+      $(units).addClass("unitsCell");
+      baseValue.innerHTML = baseVariablesData[baseVar[0]].value;
+      fromRules.innerHTML = rulesVariablesData[baseVar[0]];
+      custom.innerHTML = '';
+      totalValue.innerHTML = derivedVariablesData[baseVar[0]];
+      totalValue.classList.add("highlight");
+      
+      // It feels stupid to add this custom input box to only Diaper Time here, but whatever, it's not that big of an overhead...
+      if (baseVar[0] == "diaperTime") {
+        custom.innerHTML = customVariablesData["diaperTime"];
+        customAdd.innerHTML = '<input id="diaperTimeCustomInput" type="number" name="diaperTimeCustom" value="0" /><a id="diaperTimeCustomAddButton" class="activeButton vertical-center waves-effect waves-light pink lighten-3 btn" onclick="customDiaperTimeAdd()">Add</a>';
+      }
+    });
+    let diaperTimeCustomInput = document.getElementById("diaperTimeCustomInput");
+    diaperTimeCustomInput.addEventListener('keypress', diaperTimeCustomInputEnter)
+  };
+  
+  const diaperTimeCustomInputEnter = function() {
+    if (event.key === 'Enter') {
+      customDiaperTimeAdd();
+    }
+  }
+  
+  const customDiaperTimeAdd = function() {
+    diaperTimeCustomInput = document.getElementById("diaperTimeCustomInput");
+    customVariablesData["diaperTime"] += Number(diaperTimeCustomInput.value);
+    //diaperTimeCustomInput.value = 0;
+    calculateVariables();
+    clearTable("variablesRow");
+    populateVariablesTable();
+  }
+
+  // Calculate modified variable values based on base values and active rule stacks
+  const calculateVariables = function() {
+    console.log("Calculating variables...");
+    if (Object.keys(baseVariablesData).includes("diaperTime")) {
+      let A0_DiaperTimePerStack = 0;
+      let A0_DiaperTimePerStackElement = document.getElementById("A0_Value2");
+      if (A0_DiaperTimePerStackElement) {
+        A0_DiaperTimePerStack = Number(A0_DiaperTimePerStackElement.textContent);
+      }
+      
+      rulesVariablesData["diaperTime"] = activeRuleset["M0"].total_value + A0_DiaperTimePerStack * A0_inputValue;
+      derivedVariablesData["diaperTime"] = baseVariablesData.diaperTime.value + rulesVariablesData["diaperTime"] + customVariablesData["diaperTime"];
+    }
+    if (Object.keys(baseVariablesData).includes("cornerTime")) {
+      rulesVariablesData["cornerTime"] = activeRuleset["C0"].total_value;
+      derivedVariablesData["cornerTime"] = baseVariablesData.cornerTime.value + rulesVariablesData["cornerTime"];
+    }
+    if (Object.keys(baseVariablesData).includes("drinkingAmount")) {
+      rulesVariablesData["drinkingAmount"] = activeRuleset["D0"].total_value;
+      derivedVariablesData["drinkingAmount"] = baseVariablesData.drinkingAmount.value + rulesVariablesData["drinkingAmount"];
+    }
+    if (Object.keys(baseVariablesData).includes("swatsPerSpanking")) {
+      rulesVariablesData["swatsPerSpanking"] = activeRuleset["P0"].total_value;
+      derivedVariablesData["swatsPerSpanking"] = baseVariablesData.swatsPerSpanking.value + rulesVariablesData["swatsPerSpanking"];
+    }
+    if (Object.keys(baseVariablesData).includes("paciTime")) {
+      rulesVariablesData["paciTime"] = activeRuleset["B0"].total_value;
+      derivedVariablesData["paciTime"] = baseVariablesData.paciTime.value + rulesVariablesData["paciTime"];
+    }
+    if (Object.keys(baseVariablesData).includes("changeRequirement")) {
+      rulesVariablesData["changeRequirement"] = activeRuleset["E5"].total_value;
+      derivedVariablesData["changeRequirement"] = baseVariablesData.changeRequirement.value + rulesVariablesData["changeRequirement"];
+    }
+    console.log(derivedVariablesData);
+  };
+
+
+  // Generate a object representing a random set of rules.
+  //   The returned object contains an element for every rule in the rulesData.
+  //   Elements follow this format:   "<rule_id>": <num_stacks>
+  const generateActiveRuleset = function(numRules) {
+    console.log("Generating active ruleset...");
+    numRules = Number(numRules)
+    const activeRules = initializeActiveRuleset(rulesData);
+    
+    if (numRules > maxRules) {
+      console.log("ERROR: Desired number of rules is impossible. Defaulting to maximum number of rules: " + maxRules); // TODO: Make a notification box when this happens.
+      Object.values(activeRules).forEach(rule => {
+        rule.stacks = rule.max_stacks;
+        numRules = maxRules;
+      });
+    } else {
+      //handle activeRulesTable class
+      let i = 0;
+      while (i < numRules) {
+        const roll = Math.floor(Math.random() * likelihoodArray.length);
+        const rolledRuleId = likelihoodArray[roll];
+        if (activeRules[rolledRuleId].stacks <= activeRules[rolledRuleId].max_stacks - 1) {
+          activeRules[rolledRuleId].stacks = activeRules[rolledRuleId].stacks + 1;
+          i++;
+          
+          // On rolling X2, add extra rules automatically
+          if (rolledRuleId == "X2") {
+            if (activeRules[rolledRuleId].stacks == 1) {
+              numRules += Number(activeRules[rolledRuleId].starting_value);
+              
+            } else {
+              numRules += Number(activeRules[rolledRuleId].per_additional_stack);
+            }
+            if (numRules > maxRules) {
+              numRules = maxRules;
+            }
+          }
+        }
+      }
+    }
+    const condensedActiveRules = [];
+    Object.values(activeRules).forEach(rule => {
+      if (rule.stacks > 0) {
+        condensedActiveRules.push(rule);
+      }
+    });
+    console.log(condensedActiveRules);
+    
+    activeRuleset = activeRules;
+    condensedActiveRuleset = condensedActiveRules; // Maybe get rid of this one
+    
+    // Update stacks in Rules Table
+    Object.values(activeRuleset).forEach(rule => {updateRulesTableStack(rule.rule_id)});
+    
+  //Update "Current rule count" text
+  document.getElementById("ruleCountNumber").textContent = numRules;
+  };
+  
+  
+  // Adds 1 stack to a specific rule
+  const addRuleStack = function(ruleId) {
+    let ruleCountNumber = Number(document.getElementById("ruleCountNumber").textContent);
+    if (ruleCountNumber >= maxRules) {return}
+    
+    let i = 0;
+    numRules = 1;
+    lastRolledRuleID = "";
+    lastRoledRuleIDArray = [];
+    
+    if (activeRuleset[ruleId].stacks <= activeRuleset[ruleId].max_stacks - 1) {
+      activeRuleset[ruleId].stacks = activeRuleset[ruleId].stacks + 1;
+      updateRulesTableStack(ruleId);
+      i++;
+      ruleCountNumber++;
+      
+      lastRolledRuleID += ruleId;
+      lastRoledRuleIDArray.push(ruleId);
+      
+      //On rolling X2, add extra rules automatically
+      if (ruleId == "X2") {
+        if (activeRuleset[ruleId].stacks == 1) {
+          numRules += Math.min(Number(activeRuleset[ruleId].starting_value), maxRules - ruleCountNumber - numRules);
+        } else {
+          numRules += Math.min(Number(activeRuleset[ruleId].per_additional_stack), maxRules - ruleCountNumber - numRules);
+        }
+      }
+      
+      if (numRules > 1) {
+        while (i < numRules) {
+          const roll = Math.floor(Math.random() * likelihoodArray.length);
+          const rolledRuleId = likelihoodArray[roll];
+          if (activeRuleset[rolledRuleId].stacks <= activeRuleset[rolledRuleId].max_stacks - 1) {
+            activeRuleset[rolledRuleId].stacks = activeRuleset[rolledRuleId].stacks + 1;
+            updateRulesTableStack(rolledRuleId);
+            i++;
+            ruleCountNumber++;
+            
+            lastRolledRuleID += ", ";
+            lastRolledRuleID += rolledRuleId;
+            lastRoledRuleIDArray.push(rolledRuleId);
+            
+            //On rolling X2, add extra rules automatically
+            if (rolledRuleId == "X2") {
+              if (activeRuleset[rolledRuleId].stacks == 1) {
+                numRules += Math.min(Number(activeRuleset[rolledRuleId].starting_value), maxRules - ruleCountNumber - numRules);
+              } else {
+                numRules += Math.min(Number(activeRuleset[rolledRuleId].per_additional_stack), maxRules - ruleCountNumber - numRules);
+              }
+            }
+          }
+        }
+      }
+      //Update "Current rule count" text
+      document.getElementById("ruleCountNumber").textContent = ruleCountNumber;
+      //Update "Last roll" text
+      document.getElementById("lastRolledID").textContent = lastRolledRuleID;
+      //Update tables
+      updateRulesTables(); 
+    }
+  }
+  
+  // Removes 1 stack from a specific rule
+  // Obviously, removing a stack of X2 does not remove any other rules automatically.
+  const removeRuleStack = function(ruleId) {
+    let ruleCountNumber = Number(document.getElementById("ruleCountNumber").textContent);
+    if (ruleCountNumber <= 0) {return}
+    
+    if (activeRuleset[ruleId].stacks >= 1) {
+      activeRuleset[ruleId].stacks = activeRuleset[ruleId].stacks - 1;
+      activeRuleset[ruleId].total_value = 0;
+      updateRulesTableStack(ruleId);
+      ruleCountNumber--;
+    }
+    
+    //Update "Current rule count" text
+    document.getElementById("ruleCountNumber").textContent = ruleCountNumber;
+    //Update tables
+    updateRulesTables(); 
+  }
+  
+  
+  const updateRulesTableStack = function(ruleId) {
+    let stackCell = document.getElementById(`RulesTableStack_${ruleId}`);
+    if (stackCell) {
+        stackCell.innerHTML = activeRuleset[ruleId].stacks;
+    }
+  }
+  
+
+  const addActiveRules = function(numRules) {
+    let ruleCountNumber = Number(document.getElementById("ruleCountNumber").textContent);
+    if (ruleCountNumber >= maxRules) {return}
+    
+    let i = 0;
+    numRules = Number(numRules);
+    numRules = Math.min(numRules, maxRules - ruleCountNumber);
+    lastRolledRuleID = "";
+    lastRoledRuleIDArray = [];
+    while (i < numRules) {
+      const roll = Math.floor(Math.random() * likelihoodArray.length);
+      const rolledRuleId = likelihoodArray[roll];
+      if (activeRuleset[rolledRuleId].stacks <= activeRuleset[rolledRuleId].max_stacks - 1) {
+        activeRuleset[rolledRuleId].stacks = activeRuleset[rolledRuleId].stacks + 1;
+        i++;
+        ruleCountNumber++;
+        
+        if (i > 1) {
+          lastRolledRuleID += ", ";
+        }
+        lastRolledRuleID += rolledRuleId;
+        lastRoledRuleIDArray.push(rolledRuleId);
+        
+        //On rolling X2, add extra rules automatically
+        if (rolledRuleId == "X2") {
+          if (activeRuleset[rolledRuleId].stacks == 1) {
+            numRules += Math.min(Number(activeRuleset[rolledRuleId].starting_value), maxRules - ruleCountNumber - numRules);
+          } else {
+            numRules += Math.min(Number(activeRuleset[rolledRuleId].per_additional_stack), maxRules - ruleCountNumber - numRules);
+          }
+        }
+      }
+    }
+    //Update "Current rule count" text
+    document.getElementById("ruleCountNumber").textContent = ruleCountNumber;
+    //Update "Last roll" text
+    document.getElementById("lastRolledID").textContent = lastRolledRuleID;
+  };
+  
+  // Helper function for generateActiveRuleset
+  const initializeActiveRuleset = function() {
+    console.log("Initializing activeRules object...");
+    const activeRules = {};
+    rulesData.forEach(rule => {
+      activeRules[rule.rule_id] = {
+        "stacks": 0,
+        "max_stacks": rule.max_stacks,
+        "description": rule.description,
+        "category": rule.category,
+        "rule_id": rule.rule_id,
+        "starting_value": rule.starting_value || "",
+        "per_additional_stack": rule.per_additional_stack || "",
+        "total_value": 0
+      };
+    });
+    console.log(activeRules);
+    return activeRules;
+  };
+
+
+  // Creates an array of Rule IDs where each Rule ID appears in the 
+  //   array a number of times equal to that rule's likelihood.
+  const createLikelihoodArray = function() {
+    console.log("Creating likelihoodArray...");
+    rulesData.forEach(rule => {
+      for (let i = 0; i < rule.likelihood; i++) {
+        likelihoodArray.push(rule.rule_id);
+      }
+    });
+    console.log(likelihoodArray);
+  };
+
+
+  // Calculates the maximum possible number of accepted rolls
+  const calcMaxRules = function() {
+    console.log("Calculating max rolls...");
+    let maxRules = 0;
+    rulesData.forEach(rule => {
+      maxRules += rule.max_stacks;
+    });
+    console.log(maxRules);
+    return maxRules;
+  };
+
+
+  const clearTable = function(rowsClassName) {
+    console.log("Clearing table with rows: " + rowsClassName);
+    let rows = document.getElementsByClassName(rowsClassName);
+    while (rows.length > 0) {
+      rows[0].remove();
+    }
+  };
+
+
+  const rerollActiveRulesTable = function() {
+    console.log("REROLLING!");
+    const numRules = document.getElementById("numRulesInput").value;
+    generateActiveRuleset(numRules);
+    updateRulesTables();
+    calculateVariables();
+    clearTable("variablesRow");
+    populateVariablesTable();
+  };
+
+
+  const rollOnRollTable = function(rollTableId, rollTableTitleId, rollTableWrapperId) {
+    const rollTable = document.getElementById(rollTableId);
+    const rollTableTitle = document.getElementById(rollTableTitleId);
+    const rollTableWrapper = document.getElementById(rollTableWrapperId);
+    const rows = rollTable.firstElementChild.children;
+    // Unselect all rows
+    for (const row of rows) {
+      row.classList.remove("selected");
+    }
+    // Make new roll
+    const roll = Math.floor(Math.random() * rows.length);
+    rows[roll].classList.add("selected");
+    // If table is collapsed, hide each row then make the selected one visible
+    if (!rollTableTitle.classList.contains("active")) {
+      for (const row of rows) {
+        row.classList.add("hidden");
+      }
+      rows[roll].classList.remove("hidden");
+      rollTableWrapper.style.display = "block";
+      rollTableTitle.classList.add("partiallyHidden");
+    }
+    // If rolled 8 on wetting table (=bodywriting roll), clear the current bodywriting roll
+    if ((rollTableId == "wettingRollTable") && roll == 7) {
+      const span = document.getElementById("bodyWritingSpan");
+      if (span) {
+        span.innerHTML = "";
+      }
+    }
+    // If rolled 8 on changing table (=wait 3d10 roll), clear the current 3d10 roll
+    if ((rollTableId == "changingRollTable") && roll == 7) {
+      const span = document.getElementById("roll3d10Span");
+      if (span) {
+        span.innerHTML = "";
+      }
+    }
+  };
+
+
+  const populateRollTables = function() {
+    console.log("Populating roll tables...");
+    const rollTables = document.getElementById("rollTables");
+    /* table ids: randomRollTable, soggyRollTable, paciRollTable, wettingRollTable, changingRollTable */
+    const randomRollTable = document.getElementById("randomRollTable");
+    const soggyRollTable = document.getElementById("soggyRollTable");
+    const paciRollTable = document.getElementById("paciRollTable");
+    const wettingRollTable = document.getElementById("wettingRollTable");
+    const changingRollTable = document.getElementById("changingRollTable");
+    let randomRollTableContent = "";
+    let soggyRollTableContent = "";
+    let paciRollTableContent = "";
+    let wettingRollTableContent = "";
+    let changingRollTableContent = "";
+    
+    let i = 1;
+    rollTablesData[0].options.forEach(rollDesc => {
+      randomRollTableContent += "<tr><td>" + i + "</td><td>" + rollDesc.description + "</td></tr>";
+      i++;
+    });
+    i = 1;
+    rollTablesData[1].options.forEach(rollDesc => {
+      soggyRollTableContent += "<tr><td>" + i + "</td><td>" + rollDesc.description + "</td></tr>";
+      i++;
+    });
+    i = 1;
+    rollTablesData[2].options.forEach(rollDesc => {
+      paciRollTableContent += "<tr><td>" + i + "</td><td>" + rollDesc.description + "</td></tr>";
+      i++;
+    });
+    i = 1;
+    rollTablesData[3].options.forEach(rollDesc => {
+      wettingRollTableContent += "<tr><td>" + i + "</td><td>" + rollDesc.description + "</td></tr>";
+      i++;
+    });
+    i = 1;
+    rollTablesData[4].options.forEach(rollDesc => {
+      changingRollTableContent += "<tr><td>" + i + "</td><td>" + rollDesc.description + "</td></tr>";
+      i++;
+    });
+    // i = 1;
+    
+    randomRollTable.innerHTML = randomRollTableContent;
+    soggyRollTable.innerHTML = soggyRollTableContent;
+    paciRollTable.innerHTML = paciRollTableContent;
+    wettingRollTable.innerHTML = wettingRollTableContent;
+    changingRollTable.innerHTML = changingRollTableContent;
+  };
+  
+  const rollBodyWriting = function() {
+    const span = document.getElementById("bodyWritingSpan");
+    const array = rollTablesData[5].options;
+    const roll = Math.floor(Math.random() * array.length);
+    span.innerHTML = array[roll].description;
+  };
+  
+  const rollDice = function(rolls, sides) {
+    let result = 0;
+    for (let i = 0; i < rolls; i++) {
+      result += Math.floor(Math.random() * sides) + 1;
+    }
+    return result;
+  };
+  
+  const roll3d10 = function() {
+    const span = document.getElementById("roll3d10Span");
+    span.innerHTML = rollDice(3,10);
+  };
+  
+  
+  const addRuleByAmount = function(numRules) {
+    addActiveRules(numRules);
+    updateRulesTables();  
+  };
+  
+  // To use with the import function, doesn't auto-add more random rules on rule X2
+  const addRule_Import = function(ruleId, stackTarget) {
+    let stackDifference = stackTarget - activeRuleset[ruleId].stacks;
+    activeRuleset[ruleId].stacks = stackTarget;
+    //Update "Current rule count" text
+    document.getElementById("ruleCountNumber").textContent = Number(document.getElementById("ruleCountNumber").textContent) + stackDifference;
+    
+    updateRulesTables();
+  }
+  
+  const updateRulesTables = function() {
+    clearTable("activeRulesRow");
+    populateActiveRulesTable();
+    calculateVariables();
+    clearTable("variablesRow");
+    populateVariablesTable();
+  };
+  
+  
+  const setupCollapsible = function(buttonId, contentId) {
+    const button = document.getElementById(buttonId);
+    button.addEventListener("click", function() {
+      this.classList.toggle("active");
+      let content = document.getElementById(contentId);
+      if (content.style.display === "block") {
+        content.style.display = "none";
+      } else {
+        content.style.display = "block";
+      }
+    });
+  };
+  
+  const setupCollapsible2 = function(buttonId, contentId) {
+    const button = document.getElementById(buttonId);
+    const content = document.getElementById(contentId);
+    const rows = content.firstElementChild.firstElementChild.children;
+    button.addEventListener("click", function() {
+      // If the table is partiallyHidden from rollOnRollTable then collapse it and hadle leftovers from rollOnRollTable,
+      // Else if table is collapsed then expand it, 
+      // Else collapse all
+      if (this.classList.contains("partiallyHidden")) {
+        content.style.display = "none";
+        for (const row of rows) {
+          row.classList.remove("hidden");
+        }
+        this.classList.remove("partiallyHidden");
+      } else if (!this.classList.contains("active")) {
+        this.classList.add("active");
+        content.style.display = "block";
+        for (const row of rows) {
+          row.classList.remove("hidden");
+        }
+      } else {
+        this.classList.remove("active");
+        content.style.display = "none";
+      }
+    });
+  };
+
+
+  const setupCollapsibles = function() {
+    setupCollapsible("baseRulesTableTitle", "baseRules");
+    setupCollapsible("rollTablesTitle", "rollTables");
+    setupCollapsible("variablesTableTitle", "variablesTable");
+    setupCollapsible("activeRulesTableTitle", "activeRulesTable");
+    setupCollapsible("rulesTableTitle", "rulesTable");
+    setupCollapsible("exportImportTitle", "exportImportInnerWrapper");
+    
+    setupCollapsible2("paciRollTableTitle", "paciRollTableWrapper");
+    setupCollapsible2("soggyRollTableTitle", "soggyRollTableWrapper");
+    setupCollapsible2("randomRollTableTitle", "randomRollTableWrapper");
+    setupCollapsible2("wettingRollTableTitle", "wettingRollTableWrapper");
+    setupCollapsible2("changingRollTableTitle", "changingRollTableWrapper");
+  };
+  
+  // Stores the list of conditions and which rules have that condition
+  // Try to have as few conditions as you can while separating key things that need attention, like having to do something *before* something.
+  // todo: Vary order as needed to be more logical
+  const conditionsList = {
+    "While sucking something and lying down...": ["M1"],
+    "When drinking...": ["D1", "D2", "D6"],
+    "When drinking while wet...": ["D5"],
+    "When sucking to drink...": ["D3", "D7"],
+    "Interrupting paci time to drink...": ["D4"],
+    "Before pacifier...": ["B3"],
+    "When pacifier...": ["B1"],
+    "Before removing paci...": ["B2"],
+    "Before corner time...": ["C4"],
+    "Before corner time after spanking...": ["C6"],
+    "During corner time...": ["C1", "C2", "C3", "C5"],
+    "Before spanking...": ["P1", "P6"],
+    "During spanking...": ["P2", "P3", "P7"],
+    "After spanking...": ["P4", "P5"],
+    "After spanking or corner...": ["X0"],
+    "When in wet diaper...": ["A3"],
+    "Before change...": ["E0", "E2", "E3", "E1", "E4"]
+  }
+  
+  // A short description to add after the rule ID in the "Active conditions" sidebox
+  const conditionListShortEffect = {
+    "M1": "try to wet.",
+    "C1": "on dropping coin (count!), extend cornertime.",
+    "C2": "on dropping coin (count!), spanking after corner.",
+    "C3": "on dropping coin (count!), add diaper time.",
+    "C4": "set extra timer to wet.",
+    "C5": "suck paci.",
+    "C6": "increase corner time.",
+    "D1": "must be baby bottle/sippy cup.",
+    "D2": "must be lying down.",
+    "D3": "don't remove lips until finished.",
+    "D4": "try to wet before putting back paci.",
+    "D5": "try to wet.",
+    "D6": "hold drink with both hands.",
+    "D7": "do X min paci afterwards.",
+    "P1": "coinflip, on heads use implement.",
+    "P2": "\"Thank you, Mommy/Daddy\" after each swat.",
+    "P3": "suck paci.",
+    "P4": "add diaper time.",
+    "P5": "if spanked while wet, do corner time.",
+    "P6": "if spanked while wet, double spanks.",
+    "P7": "put bodyweight on bladder.",
+    "E0": "suck paci continuously for X mins.",
+    "E1": "on meeting change conditions, [check rule].",
+    "E2": "spanking before or after.",
+    "E3": "X% cornertime.",
+    "E4": "on meeting change conditions, [check rule].",
+    "A3": "may not cover it [some exceptions].",
+    "B1": "no standing.",
+    "B2": "roll d6, [check rule].",
+    "B3": "roll d6, [check rule].",
+    "X0": "if wet, paci, forbidden to stand -> add diaper time."
+  }
+  /*
+    List of rules with a handled condition:
+      M1, C1, C2, C3, C4, C5, C6, D1, D2, D3, D4, D5, D6, D7, P1, P2, P3, P4, P5, P6, P7, E0, E1, E2, E3, E4, B1, B2, B3, X0
+    List of rules without a handled condition:
+      M0, C0, D0, P0, E5, A0, A1, A2, B0, X1, X2, X3, X4, X5
+  */
+  const notConditionListOrAutocalcRules = ["A0", "A1", "A2", "X1", "X3", "X4", "X5"];
+  
+  // Updates the "Active conditions" sidebox based on currently active rules
+  //todo: add collapse/expand all button
+  /*This should be the list of active conditions, with a list of clickable rule IDs below the condition, that list being collapsible*/
+  /*Symbols for collapse: https://stackoverflow.com/questions/2701192/what-characters-can-be-used-for-up-down-triangle-arrow-without-stem-for-displa */
+  const updateConditions = function() {
+    // Create array with active rule IDs
+    let activeRuleIDs = [];
+    Object.entries(activeRuleset).forEach(rule => {
+      if (rule[1].stacks > 0) {
+        activeRuleIDs.push(rule[1].rule_id);
+      }
+    });
+    
+    // Create list of conditions
+    let conditions = "";
+    let i = 0;
+    Object.entries(conditionsList).forEach(cond => {
+      // Check if any of the IDs listed for the condition is in the activeRuleIDs array
+      let hasActiveRule = false;
+      cond[1].forEach(condEffID => {
+        if (activeRuleIDs.includes(condEffID)) {
+          hasActiveRule = true;
+        }
+      });
+      
+      // If there was an active rule, list the condition
+      if (hasActiveRule) {
+        conditions += '<div class="condition expanded" id="cond_' + i + '">' + cond[0] + '</div>';
+        // todo: add "expanded" class after collapse/expand logic is written, changing classes on click
+        
+        // List the active rules for the condition
+        cond[1].forEach(condEffID => {
+          if (activeRuleIDs.includes(condEffID)) {
+            conditions += '<div class="conditionEffect" id="' + condEffID + '_cond">' + condEffID + ' - ' + conditionListShortEffect[condEffID] + '</div>';
+          }
+        });
+      }
+      i++;
+    });
+    
+    let conditionsContentArea = document.getElementById("conditionsContent");
+    conditionsContentArea.innerHTML = conditions;
+    addContitionsEventListeners(conditionsContent);
+  }
+  
+  // Make "Active conditions" entries clickable
+  const addContitionsEventListeners = function(conditionsContentArea) {
+    Array.from(conditionsContentArea.children).forEach(child => {
+      // Condition click event
+      if (child.classList.contains("condition")) {
+        child.addEventListener("click", function(event) {
+          let nextSibling = child.nextElementSibling;
+          if (child.classList.contains("expanded")) {
+            child.classList.remove("expanded");
+            child.classList.add("collapsed");
+            while (nextSibling && nextSibling.classList.contains("conditionEffect")) {
+              nextSibling.classList.add("hidden");
+              nextSibling = nextSibling.nextElementSibling;
+            }
+          } else {
+            child.classList.remove("collapsed");
+            child.classList.add("expanded");
+            while (nextSibling && nextSibling.classList.contains("conditionEffect")) {
+              nextSibling.classList.remove("hidden");
+              nextSibling = nextSibling.nextElementSibling;
+            }
+          }
+        });
+      }
+      // Rule click event to expand active rules table and highlight rule
+      if (child.classList.contains("conditionEffect")) {
+        child.addEventListener("click", function(event) {
+          let activeRulesTableTitle = document.getElementById("activeRulesTableTitle");
+          let activeRulesTable = document.getElementById("activeRulesTable");
+          if (!activeRulesTableTitle.classList.contains("active")) {
+            activeRulesTableTitle.classList.add("active");
+            activeRulesTable.style.display = "block";
+          }
+          let rule = document.getElementById(child.id.split("_")[0]);
+          if (!isElementInView(rule)) {
+            rule.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          const currentBackgroundColor = getComputedStyle(rule).backgroundColor;
+          rule.style.setProperty('--initial-color', currentBackgroundColor);
+          rule.classList.add("flash-active");
+          setTimeout(() => {
+            rule.classList.remove('flash-active');
+          }, 1500);
+        });
+      }
+    });
+    // Title click event to collapse/expand all
+    let sideboxTitle = document.getElementById("sideBoxTitle");
+    sideboxTitle.addEventListener("click", function(event) {
+      // If currently expanded then collapse all, else expand all
+      if (sideboxTitle.classList.contains("expanded")) {
+        sideboxTitle.classList.remove("expanded");
+        sideboxTitle.classList.add("collapsed");
+        Array.from(conditionsContentArea.children).forEach(child => {
+          if (child.classList.contains("condition") && child.classList.contains("expanded")) {
+            child.classList.remove("expanded");
+            child.classList.add("collapsed");
+          }
+          if (child.classList.contains("conditionEffect") && !child.classList.contains("hidden")) {
+            child.classList.add("hidden");
+          }
+        });
+      } else {
+        sideboxTitle.classList.remove("collapsed");
+        sideboxTitle.classList.add("expanded");
+        Array.from(conditionsContentArea.children).forEach(child => {
+          if (child.classList.contains("condition") && child.classList.contains("collapsed")) {
+            child.classList.remove("collapsed");
+            child.classList.add("expanded");
+          }
+          if (child.classList.contains("conditionEffect") && child.classList.contains("hidden")) {
+            child.classList.remove("hidden");
+          }
+        });
+      }
+    });
+  }
+  
+  // Checks if element is in view currently
+  function isElementInView(element) {
+    var docViewTop = $(window).scrollTop();
+    var docViewBottom = docViewTop + $(window).height();
+    var elemTop = $(element).offset().top;
+    var elemBottom = elemTop + $(element).height();
+
+    return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
+}
+  
+  // Finds the condition based on rule id
+  // Currently unused.
+  const findCondition = function(ruleID) {
+    return Object.keys(conditionsList).filter(key => conditionsList[key].includes(ruleID));
+  }
+  
+  const exportSave = function() {
+    let exportContent = {};
+    let activeRulesIdStack = [];
+    
+    Object.entries(activeRuleset).forEach(rule => {
+      if (rule[1].stacks > 0) {
+        activeRulesIdStack.push([rule[1].rule_id,rule[1].stacks]);
+      }
+    });
+    exportContent["activeRulesIdStack"] = activeRulesIdStack;
+    
+    exportContent["A0_inputValue"] = A0_inputValue;
+    exportContent["customDiaperTime"] = customVariablesData["diaperTime"];
+    
+    document.getElementById("exportImportTextarea").value = JSON.stringify(exportContent);
+  }
+  let importContent = [];
+  const importSave = function() {
+    //let importContent = [];
+    importContent = JSON.parse(document.getElementById("exportImportTextarea").value);
+    
+    if (typeof importContent["A0_inputValue"] === "number") {
+      A0_inputValue = importContent["A0_inputValue"];
+    }
+    
+    lastRolledRuleID = "-";
+    lastRoledRuleIDArray = [];
+    document.getElementById("lastRolledID").textContent = lastRolledRuleID;
+    
+    generateActiveRuleset(0);
+    importContent["activeRulesIdStack"].forEach(rule => {
+      if (typeof rule[0] === "string" && typeof rule[1] === "number") {
+        addRule_Import(rule[0], rule[1]);
+      }
+    });
+    
+    let A0_inputArea = document.getElementById('A0_MissingCountInput');
+    if (A0_inputArea) {
+      A0_inputArea.value = A0_inputValue;
+    }
+    
+    if (typeof importContent["customDiaperTime"] === "number") {
+      customVariablesData["diaperTime"] = importContent["customDiaperTime"];
+    }
+    
+    calculateVariables();
+    clearTable("variablesRow");
+    populateVariablesTable();
+  }
+  
+  const maxRules = calcMaxRules(rulesData);
+  
+  const main = function() {
+    populateRollTables();
+    populateRulesTable();
+    createLikelihoodArray();
+    generateActiveRuleset(20);
+    populateActiveRulesTable();
+    calculateVariables();
+    populateVariablesTable();
+    setupCollapsibles();
+  };
+
+</script>
+
+<body onload="main()">
+  <div class="mainContainer">
+    <div class="sideBox">
+      <h6 id="sideBoxTitle" class="expanded">Active conditions</h6>
+      <div id="conditionsContent"></div>
+    </div>
+    <div class="mainContent">
+      <h2>ABDL Ruleset Generator (BETA)</h2>
+      
+      <div id="baseRulesWrapper" class="tableWrapper">
+        <h4 id="baseRulesTableTitle" class="collapsible">Base Rules</h4>
+        <div id="baseRules" class="content">
+          <div class="baseRuleGroupWrapper">
+            <p style="text-align: center;">
+              <img src="images/Roll%20Diagram%20Full.png" style="max-width: 1024px;">
+            </p>
+            <h5>Main Goal</h5>
+            <ul>
+              <li class="baseRule">You have to <span class="highlight">serve all of your Diaper Time</span> (which can be found in the Variables table below). Once you have served all of it, the game is over (unless you have rules in your ruleset that state otherwise).</li>
+              <ul>
+                <li class="baseRule">Note that there are some rules which may require you to add to your overall Diaper Time during the game, so make sure you keep track of any additions you may incur.</li>
+              </ul>
+            </ul>
+            <h5>Base Tasks</h5>
+            <ul>
+              <li class="baseRule">Every hour of diaper time served, you must <span class="highlight">drink</span> your entire <span class="highlight">Drinking Amount</span>.</li>
+              <li class="baseRule">Every hour of diaper time served, you must <span class="highlight">suck on your paci</span> for the amount of time specified by your <span class="highlight">Paci Time</span> variable.</li>
+              <ul>
+                <li class="baseRule"><span class="highlight">If you fail</span> to do either, then</li>
+                <ul>
+                  <li class="baseRule">you must <span class="highlight">add 1 rule</span> if you failed one of them or <span class="highlight">add 2 rules</span> if you failed both,</li>
+                  <li class="baseRule"><span class="highlight">time doesn't count as Diaper Time served</span> until you've finished both,</li>
+                  <li class="baseRule">you <span class="highlight">may not start your next random timer</span> until you've finished both,</li>
+                  <li class="baseRule"><span class="highlight">for each further hour</span> spent without finishing your drinking/paci time, you must <span class="highlight">add an additional 2 rules for each</span> one that is still not finished.</li>
+                </ul>
+              </ul>
+            </ul>
+            <h5>Roll Tables</h5>
+            <ul>
+              <li class="baseRule">Every 30 minutes, you must <span class="highlight">set a random timer</span> for between 0 & 30 minutes.
+              <br/>Whenever your timer goes off, you must roll on the <span class="highlight">Random Roll Table</span>.</li>
+              <ul>
+                <li class="baseRule"><span class="highlight">If you're wet</span> when the timer goes off, you must also roll on the <span class="highlight">Soggy Roll Table</span>.</li>
+                <li class="baseRule"><span class="highlight">If you're sucking on your paci or baby bottle</span> when the timer goes off, you must also roll on the <span class="highlight">Paci Roll Table</span>.</li>
+              </ul>
+              <li class="baseRule"><span class="highlight">Whenever you wet</span> your diaper, you must roll on the <span class="highlight">Wetting Roll Table</span>.</li>
+              <li class="baseRule"><span class="highlight">Before you change</span> your diaper, you must roll on the <span class="highlight">Changing Roll Table</span>.</li>
+            </ul>
+          </div>
+          <div class="baseRuleGroupWrapper">
+            <h5>Other Rules</h5>
+            <ul>
+              <li class="baseRule">Every time you <span class="highlight">break a rule</span>, you must <span class="highlight">add one more rule</span> to your ruleset and abide by it for the remainder of the game.</li>
+              <li class="baseRule"><span class="highlight" style="color:yellow;">Read all "Active Rules"!</span> The "Active conditions" sidebar doesn't list all active rules, only the ones that have a trigger you have to pay attention to. The rule IDs not handled automatically are highlighted, but read the details of all the active rules before starting!</li>
+              <li class="baseRule">You may <span class="highlight">pause the game</span> for any reason (for example to eat comfortably) at the <span class="highlight">cost</span> of rolling <span class="highlight">2 additional rules</span>. You are still not allowed to remove your diaper(s) during the pause, and may only remove or cover any clothing/accessories you have on if you absolutely need to. Try to not pause during any random timers. Nothing you do and no time counts towards the game during the pause.</li>
+              <li class="baseRule">You are not allowed to change out of your current diaper until you believe you have <span class="highlight">saturated</span> it enough to meet your <span class="highlight">Change Requirement</span>. Your Change Requirement can be found below in the Variables table, and is measured by percentage of your diaper's max saturation (i.e. 100% saturation means your diaper is on the verge of leaking).</li>
+              <ul>
+                <li class="baseRule">If you stay in a messy diaper for 30 minutes, then you may ignore your required saturation percentage and change (once you've also fulfilled any additional requirements imposed by your rules).</li>
+              </ul>
+              <li class="baseRule"><span class="highlight">Corner time</span> (some rules or rolls may direct you to do corner time) must be done with
+              <ul>
+                <li class="baseRule"><span class="highlight">holding a coin with your nose</span> against a flat, vertical surface,</li>
+                <li class="baseRule"><span class="highlight">without touching the surface</span> at any other point, and</li>
+                <li class="baseRule"><span class="highlight">without leaning against the surface</span>, so there shouldn't be more than necessary pressure on the nose (a little here and there is fine, just don't put the weight of your head on it on purpose).</li>
+                <li class="baseRule">If you're kneeling, use a pillow under your knees to protect them.</li>
+              </ul>
+              <li class="baseRule"><span class="highlight">Spankings</span> (some rules or rolls may direct you to do spanks) must be
+              <ul>
+                <li class="baseRule">on <span class="highlight">bare skin</span>,</li>
+                <li class="baseRule">either <span class="highlight">right below the diaper on the back of the thighs</span> or on the <span class="highlight">inner thighs</span>, or, if you can easily pull your diaper down, on your <span class="highlight">bare bottom</span>.</li>
+                <li class="baseRule">You must <span class="highlight">count out loud</span> after each swat, and any you forget to count before the next swat doesn't count.
+              </ul>
+              <li class="baseRule">During this game, you must be diapered at all times. There is no requirement for what kind of diaper you must have on.</li>
+              <ul>
+                <li class="baseRule">You may not remove your diaper for the duration of this dare except to change or to use the potty for number two if that's against your limits (nothing in this dare strictly requires messing).</li>
+                <li class="baseRule">If you <span class="highlight">use the potty</span> for number two, pause the game, add the required <span class="highlight">two additional rules</span> for the pause, and try to not pee. If you pee more than 1-2 small drops, roll on the wetting table after you unpause the game.</li>
+              </ul>
+              <li class="baseRule">If you don't have a pacifier, then you may suck on something else in place of one in order to fulfill your Paci Time. Thumb, favorite stuffie, even a bottle would technically count. However, if you <i>do</i> have a paci, then you are required to use it, and no substitutions are allowed.</li>
+              <li class="baseRule">If your random timer goes off while you are being spanked or in corner time, you must wait to perform your required rolls until after you are finished with all spankings & corner time you have assigned.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <!-- TODO: It would be nice to eventually have the roll tables be auto-populated using external JSON -->
+      <div id="rollTablesWrapper" class="tableWrapper">
+        <h4 id="rollTablesTitle" class="collapsible">Roll Tables</h4>
+        <div id="rollTables" class="content">
+          <div class="rollTable">
+            <div class="tableHeader">
+              <h5 id="randomRollTableTitle" class="title collapsible">Random Roll Table</h5>
+              <div class="controls">
+                <a id="rerollRandomTable" class="activeButton vertical-center waves-effect waves-light pink lighten-3 btn" onclick="rollOnRollTable('randomRollTable', 'randomRollTableTitle', 'randomRollTableWrapper')">Roll</a>
+              </div>
+            </div>
+            <div id="randomRollTableWrapper" class="random rollTable content">
+              <table id="randomRollTable">
+              </table>
+            </div>
+          </div>
+          <div class="rollTable">
+            <div class="tableHeader">
+              <h5 id="soggyRollTableTitle" class="title collapsible">Soggy Roll Table</h5>
+              <div class="controls">
+                <a id="rerollSoggyTable" class="activeButton vertical-center waves-effect waves-light pink lighten-3 btn" onclick="rollOnRollTable('soggyRollTable', 'soggyRollTableTitle', 'soggyRollTableWrapper')">Roll</a>
+              </div>
+            </div>
+            <div id="soggyRollTableWrapper" class="soggy rollTable content">
+              <table id="soggyRollTable">
+              </table>
+            </div>
+          </div>
+          <div class="rollTable">
+            <div class="tableHeader">
+              <h5 id="paciRollTableTitle" class="title collapsible">Paci Roll Table</h5>
+              <div class="controls">
+                <a id="rerollPaciTable" class="activeButton vertical-center waves-effect waves-light pink lighten-3 btn" onclick="rollOnRollTable('paciRollTable', 'paciRollTableTitle', 'paciRollTableWrapper')">Roll</a>
+              </div>
+            </div>
+            <div id="paciRollTableWrapper" class="pacifier rollTable content">
+              <table id="paciRollTable">
+              </table>
+            </div>
+          </div>
+          <div class="rollTable">
+            <div class="tableHeader">
+              <h5 id="wettingRollTableTitle" class="title collapsible">Wetting Roll Table</h5>
+              <div class="controls">
+                <a id="rerollWettingTable" class="activeButton vertical-center waves-effect waves-light pink lighten-3 btn" onclick="rollOnRollTable('wettingRollTable', 'wettingRollTableTitle', 'wettingRollTableWrapper')">Roll</a>
+              </div>
+            </div>
+            <div id="wettingRollTableWrapper" class="wetting rollTable content">
+              <table id="wettingRollTable">
+              </table>
+            </div>
+          </div>
+          <div class="rollTable">
+            <div class="tableHeader">
+              <h5 id="changingRollTableTitle" class="title collapsible">Changing Roll Table</h5>
+              <div class="controls">
+                <a id="rerollChangingTable" class="activeButton vertical-center waves-effect waves-light pink lighten-3 btn" onclick="rollOnRollTable('changingRollTable', 'changingRollTableTitle', 'changingRollTableWrapper')">Roll</a>
+              </div>
+            </div>
+            <div id="changingRollTableWrapper" class="changing rollTable content">
+              <table id="changingRollTable">
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="variablesTableWrapper" class="tableWrapper">
+        <h4 id="variablesTableTitle" class="collapsible">Variables</h4>
+        <table id="variablesTable" class="content">
+          <tr>
+            <th></th>
+            <th>Units</th>
+            <th>Base amount</th>
+            <th>Rules</th>
+            <th>Custom</th>
+            <th class="highlight">Total amount</th>
+            <th></th>
+          </tr>
+        </table>
+      </div>
+      
+      <div id="activeRulesTableWrapper" class="tableWrapper">
+        <div id="activeRulesTableHeader" class="tableHeader">
+          <h4 id="activeRulesTableTitle" class="collapsible">Active Rules Table</h4>
+          <div id="activeRulesTableControls">
+            Number of rules:
+            <input id="numRulesInput" type="number" name="numRules" value="20" />
+            <a id="rerollButton" class="activeButton vertical-center waves-effect waves-light pink lighten-3 btn" onclick="rerollActiveRulesTable()">Reroll</a>
+            or
+            <a id="addButton" class="activeButton vertical-center waves-effect waves-light pink lighten-3 btn" onclick="addRuleByAmount(1)">Add one more rule</a>
+        <p id="ruleCount">Current rule count: <span id="ruleCountNumber">20</span></p>
+        <p id="lastRolled">Last roll: <span id="lastRolledID">-</span></p>
+          </div>
+        </div>
+        <table id="activeRulesTable" class="content">
+          <tr>
+            <th>Rule ID</th>
+            <th>Stack</th>
+            <th>Description</th>
+          </tr>
+        </table>
+      </div>
+      
+      <div id="rulesTableWrapper" class="tableWrapper">
+        <h4 id="rulesTableTitle" class="collapsible">Rules Table</h4>
+        <table id="rulesTable" class="content">
+          <tr>
+            <th>Rule ID</th>
+            <th>Likeli-hood</th>
+            <th>Max Stack</th>
+            <th>Stack</th>
+            <th>Description</th>
+          </tr>
+        </table>
+      </div>
+      
+      <div id="exportImportWrapper" class="tableWrapper">
+        <h4 id="exportImportTitle" class="collapsible">Export/Import</h4>
+        <div id="exportImportInnerWrapper" class="content">
+          <a id="exportButton" class="activeButton vertical-center waves-effect waves-light pink lighten-3 btn" onclick="exportSave()">Export</a>
+          <a id="importButton" class="activeButton vertical-center waves-effect waves-light pink lighten-3 btn" onclick="importSave()">Import</a>
+          <a id="selectAllExportImportButton" class="activeButton vertical-center waves-effect waves-light pink lighten-3 btn" onclick="document.getElementById('exportImportTextarea').select();">Select All</a>
+          <br />
+          <textarea id="exportImportTextarea" type="text" name="exportImport"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>  
+  <!--JavaScript at end of body for optimized loading-->
+  <script type="text/javascript" src="js/materialize.js"></script>
+</body>
+
+</html>
