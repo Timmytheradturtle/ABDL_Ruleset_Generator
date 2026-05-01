@@ -344,20 +344,25 @@ rulesData = [
     "category": "other"
   },
   {
-    "rule_id": "X4",
-    "likelihood": 2,
-    "max_stacks": 2,
-	  "starting_value": 60,
-	  "per_additional_stack": 60,
-    "description": "You are not allowed to end this game unless you've made a messy diaper at least 60 minutes before finishing. If this is against your limits, you may instead put something squishy in the seat of your diaper at least <span id=\"X4_Value\" class=\"calculatedValue\">60</span> minutes before finishing. If this is still aginst your limits, re-roll to add another rule. (+60 minutes per additional stack - max 2 stacks)",
-    "category": "other"
-  },
-  {
     "rule_id": "X5",
     "likelihood": 2,
     "max_stacks": 1,
     "description": "You are not allowed to end this game unless you meet all other criteria and your diaper is leaking (Cannot stack)",
     "category": "other"
+  },
+  {
+    "rule_id": "R0",
+    "likelihood": 2,
+    "max_stacks": 2,
+    "description": "Roll volatility: Flip a coin before each roll (except when rolling for a new rule). If heads, roll with advantage. If tails, roll with disadvantage. (Roll twice and take the better/worse option. If neither is better/worse, take whatever rolled second.) On 2 stacks, flip this coin with disadvantage.",
+    "category": "roll"
+  },
+  {
+    "rule_id": "R1",
+    "likelihood": 2,
+    "max_stacks": 2,
+    "description": "Time volatility: Flip a coin before rolling on the Random Roll Table. If heads, add 1d6 minutes to your diaper time. If tails, remove 1d6 minutes from your diaper time. On 2 stacks, flip this coin with disadvantage.",
+    "category": "roll"
   }
 ];
 
