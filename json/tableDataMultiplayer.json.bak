@@ -391,6 +391,9 @@ rollTablesData = [
       },
       {
         "description": "If you currently meet the requirements for a change and just decided to not change yet, you must change right now. (You still need to satisfy all conditions added by rules, and have to roll on the changing table as normal too. This just stops you from delaying it at will.)"
+      },
+      {
+        "description": "Keep rapidly pressing on your bladder for 2 minutes."
       }
     ]
   },
@@ -475,6 +478,12 @@ rollTablesData = [
       },
       {
         "description": "Nothing."
+      },
+      {
+        "description": "Nothing."
+      },
+      {
+        "description": "Roll what to write on your body somewhere, letter height at least 2cm. <a id='rerollbodyWriting' class='activeButton vertical-center waves-effect waves-light pink lighten-3 btn' onclick='rollBodyWriting()'>Roll</a> <span id='bodyWritingSpan'></span>"
       }
     ]
   },
@@ -493,6 +502,12 @@ rollTablesData = [
       },
       {
         "description": "Until you wet your new diaper, you must double any corner time, spankings, or paci time you begin."
+      },
+      {
+        "description": "Tape the legholes of your diaper to your legs."
+      },
+      {
+        "description": "Do 2 then tape the legholes of your diaper to your legs."
       },
       {
         "description": "You get 1 reroll token, you may use it to reroll once on the Roll Tables."
